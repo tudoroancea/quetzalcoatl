@@ -1,0 +1,4 @@
+project(${PROJECT_NAME}-test)
+
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
