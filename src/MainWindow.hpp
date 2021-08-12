@@ -20,13 +20,20 @@ QT_END_NAMESPACE
 class MainWindow : public QMainWindow {
 private:
     Game* game;
+    int score = 0;
+    int bestScore = 0;
     QLabel* scoreLabel;
     QLabel* bestScoreLabel;
+    /**
+     * Si égal à 0 alors le timer est arrêté. Sinon indique l'id du timer.
+     */
     int timerId = 0;
     int simulationSpeed = simulationBaseSpeed;
 
 protected:
     void paintEvent(QPaintEvent* event) override;
+    void keyPressEvent(QKeyEvent* event) override;
+    void timerEvent(QTimerEvent* event) override;
 
 public:
     explicit MainWindow();

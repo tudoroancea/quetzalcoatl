@@ -7,6 +7,7 @@
 #include "Game.h"
 
 #include <algorithm>
+#include <iostream>
 #include <random>
 
 
@@ -45,6 +46,7 @@ Coord Game::avancer() const {
 }
 
 void Game::update() {
+    std::cerr << "Game::update()" << std::endl;
     Coord futureSnakeHead = {snake.head().first + avancer().first, snake.head().second + avancer().second};
     if (futureSnakeHead.first > 14 || futureSnakeHead.second > 14) {
         emit error();
@@ -61,6 +63,11 @@ void Game::update() {
     } else {
         snake.evolve(futureSnakeHead);
     }
+    std::cout << "Snake : ";
+    for (const auto& item : body) {
+        std::cout << "{" << item.first << "," << item.second << "} ; ";
+    }
+    std::cout << std::endl;
 }
 unsigned Game::getScore() const {
     return score;
