@@ -21,6 +21,7 @@ private:
     Coord apple;
     unsigned score = 0;
     bool isFinished = false;
+    bool hasBegun = false;
 
     //    Utility functions ======================
 
@@ -33,16 +34,14 @@ public:
     //    Getters & Setters ========================
 
     [[nodiscard]] unsigned getScore() const;
-    void setScore(unsigned int const& newScore);
     [[nodiscard]] Coord getApple() const;
-    void setApple(Coord const& newApple);
     Snake& getSnake();
-    bool getIsFinished();
+    [[nodiscard]] bool getIsFinished() const;
+    [[nodiscard]] bool getHasBegun() const;
+    void begin();
+
     //    Evolution =============================
 
     void update();
-
-signals:
-    void error();
 };
 #endif  // QUETZALCOATL_GAME_H

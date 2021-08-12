@@ -23,17 +23,19 @@ private:
      * TODO : change this pointer to a normal variable
      */
     Game* game;
-    int score = 0;
+    //    int score = 0;
     int bestScore = 0;
-    QLabel* scoreLabel;
-    QLabel* bestScoreLabel;
+    //    QLabel* scoreLabel;
+    //    QLabel* bestScoreLabel;
+    QList<QLabel*> statusLabels;
     /**
      * Si égal à 0 alors le timer est arrêté. Sinon indique l'id du timer.
      */
     int timerId = 0;
     int simulationSpeed = simulationTabSpeed[0];
 
-    void initScores();
+    void hideLabels() const;
+    void showLabels() const;
 
 protected:
     void paintEvent(QPaintEvent* event) override;
@@ -45,8 +47,6 @@ public:
 
 public slots:
     void startTimer();
-    void killTimer();
-    void initScoreLabels() const;
 };
 
 

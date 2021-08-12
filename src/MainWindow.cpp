@@ -18,9 +18,7 @@
 #include <QStatusBar>
 
 
-MainWindow::MainWindow() : game(new Game()), scoreLabel(new QLabel("0")), bestScoreLabel(new QLabel("0")) {
-    connect(game, &Game::error, this, &MainWindow::killTimer);
-
+MainWindow::MainWindow() : game(new Game()), statusLabels({new QLabel("Current Score : "), new QLabel("0"), new QLabel("Best Score : "), new QLabel("0")}) {
     this->setCentralWidget(new QWidget);
     this->setWindowTitle(PROJECT_NAME);
     this->setMinimumSize(550, 550);
@@ -28,7 +26,10 @@ MainWindow::MainWindow() : game(new Game()), scoreLabel(new QLabel("0")), bestSc
     QList screens(QGuiApplication::screens());
     this->move(screens[(screens.size() > 1 ? 1 : 0)]->geometry().center() - frameGeometry().center());
     this->setUnifiedTitleAndToolBarOnMac(true);
-//    this->initScoreLabels();
+    for (const auto& label : statusLabels) {
+        this->statusBar()->addWidget(label);
+    }
+    this->hideLabels();
 #ifdef RELEASE_MODE
     this->statusBar()->addPermanentWidget(new QLabel(QString("Version ").append(PROJECT_VERSION)));
 #endif
@@ -37,25 +38,15 @@ MainWindow::MainWindow() : game(new Game()), scoreLabel(new QLabel("0")), bestSc
     this->setFocus();
 }
 
-void MainWindow::initScoreLabels() const {
-    statusBar()->addWidget(new QLabel("Current Score : "));
-    statusBar()->addWidget(scoreLabel);
-    statusBar()->addWidget(new QLabel("Best Score : "));
-    statusBar()->addWidget(bestScoreLabel);
-}
-
 void MainWindow::paintEvent(QPaintEvent* event) {
     QWidget::paintEvent(event);
     QPainter painter(this);
-    QRect window(painter.window());
 
     int height = this->size().height();
     int width = this->size().width();
     int maxi = std::min(width, height - 20);
-    // painter.setWindow((width-maxi)/2+10, (height-maxi)/2+5, maxi-20, maxi-20));
     int x0 = (width-maxi)/2+10;
     int y0 = (height-maxi)/2+5;
-    int size = maxi-20;
     double unit((maxi-20)/gridSize);
     for(unsigned i(0); i < gridSize; i++) {
         for(unsigned j(0); j < gridSize; j++) {
@@ -72,11 +63,9 @@ void MainWindow::paintEvent(QPaintEvent* event) {
         QRect background(box.first*unit+x0, box.second*unit+y0, unit, unit);
         painter.fillRect(background, darkBlue);
     }
-
     QRect background(game->getApple().first*unit+x0, game->getApple().second*unit+y0, unit, unit);
     painter.fillRect(background, darkRed);
 
-    // std::cerr << window.width() << ", " << window.height() << ", " << window.x() << ", " << window.y() << std::endl;
 }
 void MainWindow::keyPressEvent(QKeyEvent* event) {
     switch (event->key()) {
@@ -93,10 +82,11 @@ void MainWindow::keyPressEvent(QKeyEvent* event) {
             if (game->getSnake().getDirection() != Left) game->getSnake().setDirection(Right);
             break;
         case Qt::Key_Space: {
-            if (timerId == 0) {
-                this->initScoreLabels();
+            if (!game->getHasBegun()) {
                 this->startTimer();
+                game->begin();
                 this->statusBar()->clearMessage();
+                this->showLabels();
             }
             break;
         }
@@ -109,36 +99,51 @@ void MainWindow::timerEvent(QTimerEvent* event) {
     QObject::timerEvent(event);
     game->update();
     this->update();
-    score = (int) game->getScore();
-    scoreLabel->setNum(score);
+    int score = (int) game->getScore();
+    statusLabels[1]->setNum(score);
     if (score > bestScore) {
         bestScore = score;
-        bestScoreLabel->setNum(bestScore);
+        statusLabels[3]->setNum(bestScore);
+    }
+    if (game->getIsFinished()) {
+        this->QObject::killTimer(timerId);
+        timerId = 0;
+        QMessageBox::StandardButton result = QMessageBox::information(this, "You have been killed", "You have been killed. Better luck next time !\nDo you want to try again?", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+        if (result == QMessageBox::Yes) {
+            delete game;
+            game = new Game();
+            this->update();
+            this->hideLabels();
+            statusLabels[1]->setNum(0);
+            this->statusBar()->showMessage("Press space bar to start snake");
+        }
     }
 }
 
-void MainWindow::killTimer() {
-    this->QObject::killTimer(timerId);
-    timerId = 0;
-    QMessageBox::StandardButton result = QMessageBox::information(this, "You have been killed", "You have been killed. better luck next time !\nDo you want to try again?", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
-    if (result == QMessageBox::Yes) {
-        delete game;
-        game = new Game();
-        this->update();
-        this->statusBar()->showMessage("Press space bar to start snake");
-    } else {
-        /*
-         *  TODO : Est-ce que si on répond non on ferme l'appli ?
-         */
+void MainWindow::startTimer() {
+    int score = game->getScore();
+    if (score < 5) simulationSpeed = simulationTabSpeed[0];
+    else if (score < 10)
+        simulationSpeed = simulationTabSpeed[1];
+    else if (score < 15)
+        simulationSpeed = simulationTabSpeed[2];
+    else if (score < 20)
+        simulationSpeed = simulationTabSpeed[3];
+    else if (score < 25)
+        simulationSpeed = simulationTabSpeed[4];
+    else if (score < 30)
+        simulationSpeed = simulationTabSpeed[5];
+    else if (score < 50)
+        simulationSpeed = simulationTabSpeed[6];
+    timerId = this->QObject::startTimer(simulationSpeed, Qt::PreciseTimer);
+}
+void MainWindow::hideLabels() const {
+    for (const auto& label : statusLabels) {
+        label->hide();
     }
 }
-void MainWindow::startTimer() {
-    if(score < 5) simulationSpeed = simulationTabSpeed[0];
-    else if (score < 10 ) simulationSpeed = simulationTabSpeed[1];
-    else if (score < 15 ) simulationSpeed = simulationTabSpeed[2];
-    else if (score < 20 ) simulationSpeed = simulationTabSpeed[3];
-    else if (score < 25 ) simulationSpeed = simulationTabSpeed[4];
-    else if (score < 30 ) simulationSpeed = simulationTabSpeed[5];
-    else if (score < 50 ) simulationSpeed = simulationTabSpeed[6];
-    timerId = this->QObject::startTimer(simulationSpeed, Qt::PreciseTimer);
+void MainWindow::showLabels() const {
+    for (const auto& label : statusLabels) {
+        label->show();
+    }
 }

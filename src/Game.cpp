@@ -47,7 +47,6 @@ Coord Game::avancer() const {
 }
 
 void Game::update() {
-    std::cerr << "Game::update()" << std::endl;
     Coord futureSnakeHead = {snake.head().first + avancer().first, snake.head().second + avancer().second};
     if (futureSnakeHead.first > 14 || futureSnakeHead.second > 14) {
         std::cout << "error"<<std::endl;
@@ -57,7 +56,6 @@ void Game::update() {
     List body = snake.getBody();
     auto it(std::find(body.begin(), body.end(), futureSnakeHead));  // test if the future snake head will intercept its body
     if (it != body.end() && it != std::prev(body.end())) {
-        std::cout << "error"<<std::endl;
         isFinished = true;
     }
     if (!isFinished) {
@@ -68,11 +66,6 @@ void Game::update() {
         } else {
             snake.evolve(futureSnakeHead);
         }
-        std::cout << "Snake : ";
-        for (const auto& item : body) {
-            std::cout << "{" << item.first << "," << item.second << "} ; ";
-        }
-        std::cout << std::endl;
     }
 }
 unsigned Game::getScore() const {
@@ -81,18 +74,16 @@ unsigned Game::getScore() const {
 Coord Game::getApple() const {
     return apple;
 }
-void Game::setScore(unsigned int const& newScore) {
-    score = newScore;
-}
-void Game::setApple(Coord const& newApple) {
-    apple = newApple;
-}
 Snake& Game::getSnake() {
     return snake;
 }
-bool Game::getIsFinished(){
-return isFinished;
+bool Game::getIsFinished() const {
+    return isFinished;
 }
-// void Game::error() {
-//     /* TODO : to implement */
-// }
+
+bool Game::getHasBegun() const {
+    return hasBegun;
+}
+void Game::begin() {
+    hasBegun = true;
+}
