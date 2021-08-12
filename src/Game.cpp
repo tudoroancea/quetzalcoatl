@@ -1,14 +1,17 @@
 //
 // Created by berth on 12/08/2021.
+// Copyright (c) 2021 Tudor Oancea & Mattéo Berthet. All rights reserved.
+// Licensed under the MIT license (see https://github.com/tudoroancea/quetzalcoatl/blob/develop/LICENSE)
 //
 
 #include "Game.h"
+
 #include <random>
 
 Game::Game() {
     List snakeInit;
-    Coord init = {(gridSize-1)/2-snakeBaseSize/2,(gridSize-1)/2};
-    for(size_t i(0); i < snakeBaseSize; i++) {
+    Coord init = {(gridSize - 1) / 2 - snakeBaseSize / 2, (gridSize - 1) / 2};
+    for (size_t i(0); i < snakeBaseSize; i++) {
         snakeInit.push_back({init.first+i,init.second});
     }
     snake = Snake(snakeInit);

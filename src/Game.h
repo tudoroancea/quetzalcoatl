@@ -1,11 +1,14 @@
 //
 // Created by berth on 12/08/2021.
+// Copyright (c) 2021 Tudor Oancea & Mattéo Berthet. All rights reserved.
+// Licensed under the MIT license (see https://github.com/tudoroancea/quetzalcoatl/blob/develop/LICENSE)
 //
 
 #ifndef QUETZALCOATL_GAME_H
 #define QUETZALCOATL_GAME_H
 
 #include "Snake.h"
+#include "global.h"
 
 #include <deque>
 

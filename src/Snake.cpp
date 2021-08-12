@@ -5,3 +5,23 @@
 //
 
 #include "Snake.h"
+
+Coord Snake::tail() {
+    return body.back();
+}
+Coord Snake::head() {
+    return body.front();
+}
+void Snake::evolve() {
+}
+void Snake::grow() {
+}
+List Snake::getBody() {
+    return body;
+}
+Direction Snake::getDirection() {
+    return direction;
+}
+void Snake::setDirection(const Direction& newDirection) {
+    this->direction = newDirection;
+}

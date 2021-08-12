@@ -5,6 +5,7 @@
 //
 
 #include "MainWindow.hpp"
+//#include "global.h"
 
 #include <iostream>
 
@@ -16,7 +17,7 @@
 
 
 MainWindow::MainWindow() : game(new Game()), scoreLabel(new QLabel), bestScoreLabel(new QLabel("0")) {
-    scoreLabel->setNum(game->getScore());
+    scoreLabel->setNum((int) game->getScore());
 
     this->setCentralWidget(new QWidget);
     this->setWindowTitle(PROJECT_NAME);
@@ -27,7 +28,7 @@ MainWindow::MainWindow() : game(new Game()), scoreLabel(new QLabel), bestScoreLa
     this->setUnifiedTitleAndToolBarOnMac(true);
     this->statusBar()->addWidget(new QLabel("Current Score : "));
     this->statusBar()->addWidget(scoreLabel);
-    //    this->statusBar()->addWidget(new QLabel("  "), 1);
+    this->statusBar()->addWidget(new QLabel("  "), 1);
     this->statusBar()->addWidget(new QLabel("Best Score : "));
     this->statusBar()->addWidget(bestScoreLabel);
 #ifdef RELEASE_MODE
