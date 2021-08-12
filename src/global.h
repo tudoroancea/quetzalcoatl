@@ -15,8 +15,8 @@
 
 constexpr NUM_TYPE gridSize = 15;
 constexpr unsigned int snakeBaseSize = 4;
-constexpr int simulationBaseSpeed = 100;
-const QColor darkGreen = QColor::fromRgb(162,209,72);
+constexpr int simulationBaseSpeed = 300;
+const QColor darkGreen = QColor::fromRgb(162, 209, 72);
 const QColor lightGreen = QColor::fromRgb(169,215,80);
 const QColor darkBlue = QColor::fromRgb(71,116,233);
 const QColor darkRed = QColor::fromRgb(231,71,29);
