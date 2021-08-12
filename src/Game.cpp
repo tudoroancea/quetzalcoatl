@@ -29,7 +29,7 @@ Coord Game::regenApple() {
             }
         }
         success = true;
-        apple = candidat;
+        return candidat;
     }
 
 }
@@ -51,4 +51,19 @@ void Game::update() {
             break;
     }
     Coord actual = {snake.head().first+next.first, snake.head().second+next.second};
+}
+unsigned Game::getScore(){
+    return 0;
+}
+Coord Game::getApple(){
+return Coord();
+}
+void Game::setScore(){
+
+}
+void Game::setApple(){
+
+}
+Snake& Game::getSnake(){
+return snake;
 }
