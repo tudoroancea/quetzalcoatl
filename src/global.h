@@ -4,6 +4,7 @@
 // Licensed under the MIT license (see https://github.com/tudoroancea/quetzalcoatl/blob/develop/LICENSE)
 //
 
+#pragma once
 #ifndef QUETZALCOATL_CONST_H
 #define QUETZALCOATL_CONST_H
 
