@@ -47,9 +47,8 @@ Coord Game::avancer() const {
 }
 
 void Game::update() {
-    Coord futureSnakeHead = {snake.head().first + avancer().first, snake.head().second + avancer().second};
+    Coord futureSnakeHead = {snake.head().first + avancer().first, snake.head().second + avancer().second}; //test if it doesn't exit the grid
     if (futureSnakeHead.first > 14 || futureSnakeHead.second > 14) {
-        std::cout << "error"<<std::endl;
         isFinished = true;
     }
 

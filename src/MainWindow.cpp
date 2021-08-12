@@ -42,6 +42,10 @@ void MainWindow::paintEvent(QPaintEvent* event) {
     QWidget::paintEvent(event);
     QPainter painter(this);
 
+
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.setRenderHint(QPainter::HighQualityAntialiasing);
+
     int height = this->size().height();
     int width = this->size().width();
     int maxi = std::min(width, height - 20);
@@ -63,8 +67,24 @@ void MainWindow::paintEvent(QPaintEvent* event) {
         QRect background(box.first*unit+x0, box.second*unit+y0, unit, unit);
         painter.fillRect(background, darkBlue);
     }
-    QRect background(game->getApple().first*unit+x0, game->getApple().second*unit+y0, unit, unit);
-    painter.fillRect(background, darkRed);
+
+    //DRAW APPLE
+
+    QRectF rectangle(game->getApple().first*unit+x0+0.2*unit, game->getApple().second*unit+y0+0.3*unit, 0.6*unit, 0.6*unit);
+    painter.setPen(darkRed);
+    painter.setBrush(darkRed);
+    painter.drawEllipse(rectangle);
+
+    QRectF rect(game->getApple().first*unit+x0+0.5*unit, game->getApple().second*unit+y0+0.15*unit, 0.4*unit, 0.4*unit);
+    int startAngle = 70 * 16;
+    int spanAngle = 130 * 16;
+    painter.setPen(appleGreen);
+    painter.setBrush(appleGreen);
+    painter.drawChord(rect, startAngle, spanAngle);
+
+
+    //QRect background(game->getApple().first*unit+x0, game->getApple().second*unit+y0, unit, unit);
+    //painter.fillRect(background, darkRed);
 
 }
 void MainWindow::keyPressEvent(QKeyEvent* event) {
@@ -122,19 +142,21 @@ void MainWindow::timerEvent(QTimerEvent* event) {
 
 void MainWindow::startTimer() {
     int score = game->getScore();
-    if (score < 5) simulationSpeed = simulationTabSpeed[0];
-    else if (score < 10)
+    std::cout << score << std::endl;
+    if (score < 5) {
+        simulationSpeed = simulationTabSpeed[0];
+    } else if (score < 10) {
         simulationSpeed = simulationTabSpeed[1];
-    else if (score < 15)
+    } else if (score < 15) {
         simulationSpeed = simulationTabSpeed[2];
-    else if (score < 20)
+    } else if (score < 20) {
         simulationSpeed = simulationTabSpeed[3];
-    else if (score < 25)
+    }/*else if (score < 25)
         simulationSpeed = simulationTabSpeed[4];
     else if (score < 30)
         simulationSpeed = simulationTabSpeed[5];
-    else if (score < 50)
-        simulationSpeed = simulationTabSpeed[6];
+    else if (score < 40)
+        simulationSpeed = simulationTabSpeed[6];*/
     timerId = this->QObject::startTimer(simulationSpeed, Qt::PreciseTimer);
 }
 void MainWindow::hideLabels() const {
