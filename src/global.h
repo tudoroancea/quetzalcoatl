@@ -4,8 +4,8 @@
 // Licensed under the MIT license (see https://github.com/tudoroancea/quetzalcoatl/blob/develop/LICENSE)
 //
 
-#ifndef CONST_H
-#define CONST_H
+#ifndef QUETZALCOATL_CONST_H
+#define QUETZALCOATL_CONST_H
 
 #include <deque>
 
@@ -17,8 +17,13 @@ int simulationBaseSpeed = 100;
 
 
 typedef std::pair<NUM_TYPE, NUM_TYPE> Coord;
+bool operator==(Coord const& lhs, Coord const rhs) { return lhs.first == rhs.first && lhs.second == rhs.second; }
+bool operator!=(Coord const& lhs, Coord const rhs) { return !(lhs == rhs); }
 typedef std::deque<Coord> List;
-enum Direction {Up, Down, Left, Right};
+enum Direction { Up,
+                 Down,
+                 Left,
+                 Right };
 
 
-#endif
+#endif  // QUETZALCOATL_CONST_H
