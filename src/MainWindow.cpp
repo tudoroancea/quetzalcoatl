@@ -71,10 +71,58 @@ void MainWindow::paintEvent(QPaintEvent* event) {
             }
         }
     }
+
     List body = m_game.snake().body();
-    for (auto const& box : body) {
-        QRect background(box.first * unit + x0, box.second * unit + y0, unit, unit);  // NOLINT(cppcoreguidelines-narrowing-conversions)
+
+    auto drawTail = [&](unsigned i) {
+        QRectF rect(body[i].first * unit + x0+0.5, body[i].second * unit + y0+0.5, unit-1, unit-1);
+        int startAngle = 90 * 16;
+        int spanAngle = 270 * 16;
+        painter.setPen(darkBlue);
+        painter.setBrush(darkBlue);
+        painter.drawChord(rect, startAngle, spanAngle);
+
+
+        QRect background(body[i].first * unit + x0+ unit/2, body[i].second * unit + y0, unit/2, unit);  // NOLINT(cppcoreguidelines-narrowing-conversions)
         painter.fillRect(background, darkBlue);
+    };
+
+    Coord prevTail = body[body.size()-2];
+
+
+    for (unsigned i(0); i < body.size(); i++) {
+        if (i==body.size()-1) {
+            if (Coord{m_game.snake().tail().first, m_game.snake().tail().second + 1} == prevTail) {
+                //dir = Down;
+                painter.translate(this->size().width()/2,this->size().height()/2);
+                //painter.translate(this->size().width()/2, this->size().height()/2);
+                painter.rotate(90);
+                painter.translate(-(body[i].first * unit + x0), -(body[i].second * unit + y0));
+                //painter.translate(-(body[i].first * unit + x0), -(body[i].second * unit + y0));
+                drawTail(i);
+
+
+
+                painter.resetTransform();
+
+            }
+            if (Coord{m_game.snake().tail().first, m_game.snake().tail().second - 1} == prevTail) {
+                //dir = Up;
+            }
+            if (Coord{m_game.snake().tail().first + 1, m_game.snake().tail().second} == prevTail) {
+                //dir = Right;
+
+                drawTail(i);
+
+            }
+            if (Coord{m_game.snake().tail().first-1, m_game.snake().tail().second } == prevTail) {
+                //dir = Left;
+            }
+        }
+        else {
+            QRect background(body[i].first * unit + x0, body[i].second * unit + y0, unit, unit);  // NOLINT(cppcoreguidelines-narrowing-conversions)
+            painter.fillRect(background, darkBlue);
+        }
     }
 
     // DRAW APPLE =====================
@@ -90,6 +138,7 @@ void MainWindow::paintEvent(QPaintEvent* event) {
     painter.setPen(appleGreen);
     painter.setBrush(appleGreen);
     painter.drawChord(rect, startAngle, spanAngle);
+
 
 
     // QRect background(game->getApple().first*unit+x0, game->getApple().second*unit+y0, unit, unit);
