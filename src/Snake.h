@@ -10,7 +10,6 @@
 #define QUETZALCOATL_SNAKE_H
 
 #include "global.h"
-
 #include <deque>
 
 
@@ -26,8 +25,13 @@ private:
 public:
     Snake() = default;
     Snake(Snake const&) = default;
-    Snake(List body) : body(std::move(body)) {}
-
+    Snake(List body_) : body(body_) {}
+    void evolve(Direction direction);
+    void  grow(Direction direction);
+    Coord tail();
+    Coord head();
+    List getBody();
+    Direction getDirection();
 };
 
 

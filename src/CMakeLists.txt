@@ -7,6 +7,8 @@ add_executable(${PROJECT_NAME}
         global.h
         Snake.cpp
         Snake.h
+        Game.cpp
+        Game.h
         MainWindow.cpp
         MainWindow.hpp
         )
