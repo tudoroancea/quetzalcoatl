@@ -15,23 +15,23 @@
 
 class Snake {
 private:
-    List body;
-    Direction direction = Down;
+    List m_body;
+    Direction m_direction = Down;
 
 public:
     Snake() = default;
     Snake(Snake const&) = default;
-    Snake(List body_, Direction dir_) : body(std::move(body_)), direction(dir_) {}
+    Snake(List body, Direction direction) : m_body(std::move(body)), m_direction(direction) {}
 
     void evolve(Coord next);
     void grow(Coord next);
 
     //    Getters & Setters ========================
 
-    Coord tail();
-    Coord head();
-    [[nodiscard]] List getBody() const;
-    [[nodiscard]] Direction getDirection() const;
+    [[nodiscard]] Coord tail();
+    [[nodiscard]] Coord head();
+    [[nodiscard]] List body() const;
+    [[nodiscard]] Direction direction() const;
     void setDirection(Direction const& newDirection);
 };
 

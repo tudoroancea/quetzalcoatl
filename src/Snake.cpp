@@ -7,24 +7,24 @@
 #include "Snake.h"
 
 Coord Snake::tail() {
-    return body.back();
+    return m_body.back();
 }
 Coord Snake::head() {
-    return body.front();
+    return m_body.front();
 }
 void Snake::evolve(Coord next) {
-    body.push_front(next);
-    body.pop_back();
+    m_body.push_front(next);
+    m_body.pop_back();
 }
 void Snake::grow(Coord next) {
-    body.push_front(next);
+    m_body.push_front(next);
 }
-List Snake::getBody() const {
-    return body;
+List Snake::body() const {
+    return m_body;
 }
-Direction Snake::getDirection() const {
-    return direction;
+Direction Snake::direction() const {
+    return m_direction;
 }
 void Snake::setDirection(const Direction& newDirection) {
-    this->direction = newDirection;
+    this->m_direction = newDirection;
 }

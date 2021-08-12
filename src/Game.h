@@ -14,34 +14,34 @@
 #include <deque>
 
 
-class Game : public QObject {
-    Q_OBJECT
+class Game {
 private:
-    Snake snake;
-    Coord apple;
-    unsigned score = 0;
-    bool isFinished = false;
-    bool hasBegun = false;
+    Snake m_snake;
+    Coord m_apple;
+    unsigned int m_score = 0;
+    bool m_isFinished = false;
+    bool m_hasBegun = false;
 
     //    Utility functions ======================
 
-    Coord regenApple();
-    [[nodiscard]] Coord avancer() const;
+    [[nodiscard]] Coord regenerateApple();
+    [[nodiscard]] Coord nextStep() const;
 
 public:
     Game();
+    Game(Game const&) = default;
 
     //    Getters & Setters ========================
 
-    [[nodiscard]] unsigned getScore() const;
-    [[nodiscard]] Coord getApple() const;
-    Snake& getSnake();
-    [[nodiscard]] bool getIsFinished() const;
-    [[nodiscard]] bool getHasBegun() const;
-    void begin();
+    [[nodiscard]] unsigned score() const;
+    [[nodiscard]] Coord apple() const;
+    [[nodiscard]] Snake& snake();
+    [[nodiscard]] bool isFinished() const;
+    [[nodiscard]] bool hasBegun() const;
 
     //    Evolution =============================
 
+    void begin();
     void update();
 };
 #endif  // QUETZALCOATL_GAME_H

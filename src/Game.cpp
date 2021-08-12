@@ -17,24 +17,24 @@ Game::Game() {
     for (size_t i(0); i < snakeBaseSize; i++) {
         snakeInit.push_back({init.first + i, init.second});
     }
-    List ordered = List(snakeInit.rbegin(),snakeInit.rend());
-    snake = Snake(ordered,Right);
-    apple = regenApple();
+    List ordered = List(snakeInit.rbegin(), snakeInit.rend());
+    m_snake = Snake(ordered, Right);
+    m_apple = regenerateApple();
 }
 
-Coord Game::regenApple() {
+Coord Game::regenerateApple() {
     std::random_device rd;  // Will be used to obtain a seed for the random number engine
     std::mt19937 gen(rd());  // Standard mersenne_twister_engine seeded with rd()
     std::uniform_int_distribution<int> distrib(0, gridSize - 1);
-    List body = snake.getBody();
+    List body = m_snake.body();
     Coord candid({distrib(gen), distrib(gen)});
     while (std::find(body.begin(), body.end(), candid) != body.end()) {
         candid = {distrib(gen), distrib(gen)};
     }
     return candid;
 }
-Coord Game::avancer() const {
-    switch (snake.getDirection()) {
+Coord Game::nextStep() const {
+    switch (m_snake.direction()) {
         case Up:
             return {0, -1};
         case Down:
@@ -46,43 +46,43 @@ Coord Game::avancer() const {
     }
 }
 
-void Game::update() {
-    Coord futureSnakeHead = {snake.head().first + avancer().first, snake.head().second + avancer().second}; //test if it doesn't exit the grid
-    if (futureSnakeHead.first > 14 || futureSnakeHead.second > 14) {
-        isFinished = true;
-    }
-
-    List body = snake.getBody();
-    auto it(std::find(body.begin(), body.end(), futureSnakeHead));  // test if the future snake head will intercept its body
-    if (it != body.end() && it != std::prev(body.end())) {
-        isFinished = true;
-    }
-    if (!isFinished) {
-        if (futureSnakeHead == apple) {
-            ++score;
-            apple = regenApple();
-            snake.grow(futureSnakeHead);
-        } else {
-            snake.evolve(futureSnakeHead);
-        }
-    }
+unsigned Game::score() const {
+    return m_score;
 }
-unsigned Game::getScore() const {
-    return score;
+Coord Game::apple() const {
+    return m_apple;
 }
-Coord Game::getApple() const {
-    return apple;
+Snake& Game::snake() {
+    return m_snake;
 }
-Snake& Game::getSnake() {
-    return snake;
-}
-bool Game::getIsFinished() const {
-    return isFinished;
+bool Game::isFinished() const {
+    return m_isFinished;
 }
 
-bool Game::getHasBegun() const {
-    return hasBegun;
+bool Game::hasBegun() const {
+    return m_hasBegun;
 }
 void Game::begin() {
-    hasBegun = true;
+    m_hasBegun = true;
+}
+
+void Game::update() {
+    Coord futureSnakeHead = {m_snake.head().first + nextStep().first, m_snake.head().second + nextStep().second};
+    if (futureSnakeHead.first > 14 || futureSnakeHead.second > 14) {
+        std::cout << "error" << std::endl;
+        m_isFinished = true;
+    }
+    List body = m_snake.body();
+    if (std::find(body.begin(), body.end(), futureSnakeHead) != body.end() && futureSnakeHead != m_snake.tail()) {
+        m_isFinished = true;
+    }
+    if (!m_isFinished) {
+        if (futureSnakeHead == m_apple) {
+            ++m_score;
+            m_apple = regenerateApple();
+            m_snake.grow(futureSnakeHead);
+        } else {
+            m_snake.evolve(futureSnakeHead);
+        }
+    }
 }

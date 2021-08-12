@@ -19,23 +19,18 @@ QT_END_NAMESPACE
 
 class MainWindow : public QMainWindow {
 private:
-    /*
-     * TODO : change this pointer to a normal variable
-     */
-    Game* game;
-    //    int score = 0;
-    int bestScore = 0;
-    //    QLabel* scoreLabel;
-    //    QLabel* bestScoreLabel;
-    QList<QLabel*> statusLabels;
+    Game m_game;
+    int m_bestScore = 0;
+    QList<QLabel*> m_statusLabels;
     /**
      * Si égal à 0 alors le timer est arrêté. Sinon indique l'id du timer.
      */
-    int timerId = 0;
-    int simulationSpeed = simulationTabSpeed[0];
+    int m_timerId = 0;
+    int m_simulationSpeed = simulationTabSpeed[0];
 
     void hideLabels() const;
     void showLabels() const;
+    void startTimer();
 
 protected:
     void paintEvent(QPaintEvent* event) override;
@@ -44,9 +39,6 @@ protected:
 
 public:
     explicit MainWindow();
-
-public slots:
-    void startTimer();
 };
 
 

@@ -6,7 +6,6 @@
 
 
 #include "MainWindow.hpp"
-#include "global.h"
 
 #include <QApplication>
 
