@@ -140,9 +140,18 @@ void MainWindow::timerEvent(QTimerEvent* event) {
         if (result == QMessageBox::Yes) {
             m_game = Game();
             this->update();
+            m_simulationSpeed = simulationTabSpeed[0];
             this->hideLabels();
             m_statusLabels[1]->setNum(0);
             this->statusBar()->showMessage("Press space bar to start snake");
+        }
+    } else {
+        for (int i(1); i <= 6; ++i) {
+            if (score == 2 * i) {
+                m_simulationSpeed = simulationTabSpeed[i];
+                this->QObject::killTimer(m_timerId);
+                this->startTimer();  // also replace the timerId with the new one
+            }
         }
     }
 }
