@@ -95,9 +95,9 @@ void MainWindow::paintEvent(QPaintEvent* event) {
     auto drawAngle = [&]() {
         painter.setPen(darkBlue);
         painter.setBrush(darkBlue);
-        painter.drawChord(QRectF(-unit, -unit, 2 * unit, 2 * unit), 270 * 16, 90 * 16);
+        painter.drawChord(QRectF(-unit, -unit, 2 * unit - 1, 2 * unit - 1), 270 * 16, 90 * 16);
         QPolygonF triangle;
-        triangle << QPointF(1, 1) << QPointF(1, unit) << QPointF(unit, 1);
+        triangle << QPointF(0.5, 0.5) << QPointF(0.5, unit) << QPointF(unit, 0.5);
         painter.drawConvexPolygon(triangle);
     };
     Coord prevTail = body[body.size() - 2];
@@ -144,10 +144,24 @@ void MainWindow::paintEvent(QPaintEvent* event) {
                 (body[i - 1] == Coord{body[i].first, body[i].second - 1} && body[i + 1] == Coord{body[i].first, body[i].second + 1})) {
                 painter.fillRect(QRect(0, 0, unit, unit), darkBlue);
             } else {
-                if (body[i - 1] == Coord{body[i].first, body[i].second - 1} && body[i + 1] == Coord{body[i].first - 1, body[i].second}) {  // drawin
-                    drawAngle();
-                } else if (body[i - 1] == Coord{body[i].first - 1, body[i].second} && body[i + 1] == Coord{body[i].first + 1, body[i].second}) {
+                if ((body[i - 1] == Coord{body[i].first, body[i].second - 1} && body[i + 1] == Coord{body[i].first - 1, body[i].second}) ||
+                    (body[i + 1] == Coord{body[i].first, body[i].second - 1} && body[i - 1] == Coord{body[i].first - 1, body[i].second})) {  // drawing left/up angle
+
+                } else if ((body[i - 1] == Coord{body[i].first, body[i].second - 1} && body[i + 1] == Coord{body[i].first + 1, body[i].second}) ||
+                           (body[i + 1] == Coord{body[i].first, body[i].second - 1} && body[i - 1] == Coord{body[i].first + 1, body[i].second})) {  // drawing right/up angle
+                    painter.rotate(90);
+                    painter.translate(0, -unit);
+
+                } else if ((body[i - 1] == Coord{body[i].first - 1, body[i].second} && body[i + 1] == Coord{body[i].first, body[i].second + 1}) ||
+                           (body[i + 1] == Coord{body[i].first - 1, body[i].second} && body[i - 1] == Coord{body[i].first, body[i].second + 1})) {  // drawing left/down angle
+                    painter.rotate(270);
+                    painter.translate(-unit, 0);
+                } else if ((body[i - 1] == Coord{body[i].first + 1, body[i].second} && body[i + 1] == Coord{body[i].first, body[i].second + 1}) ||
+                           (body[i + 1] == Coord{body[i].first + 1, body[i].second} && body[i - 1] == Coord{body[i].first, body[i].second + 1})) {
+                    painter.rotate(180);
+                    painter.translate(-unit, -unit);
                 }
+                drawAngle();
             }
         }
         painter.resetTransform();
