@@ -15,6 +15,7 @@
 #include <QMessageBox>
 #include <QPainter>
 #include <QScreen>
+#include <QSound>
 #include <QStatusBar>
 
 
@@ -114,7 +115,9 @@ void MainWindow::keyPressEvent(QKeyEvent* event) {
                 m_game.begin();
                 this->statusBar()->clearMessage();
                 this->showLabels();
+                m_simulationSpeed = simulationTabSpeed[0];
                 this->startTimer();
+                QSound::play(":/media/start.wav");
             }
             break;
         }
@@ -134,13 +137,13 @@ void MainWindow::timerEvent(QTimerEvent* event) {
         m_statusLabels[3]->setNum(m_bestScore);
     }
     if (m_game.isFinished()) {
+        QSound::play(":/media/fail.wav");
         this->QObject::killTimer(m_timerId);
         m_timerId = 0;
         QMessageBox::StandardButton result = QMessageBox::information(this, "You have been killed", "You have been killed. Better luck next time !\nDo you want to try again?", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
         if (result == QMessageBox::Yes) {
             m_game = Game();
             this->update();
-            m_simulationSpeed = simulationTabSpeed[0];
             this->hideLabels();
             m_statusLabels[1]->setNum(0);
             this->statusBar()->showMessage("Press space bar to start snake");

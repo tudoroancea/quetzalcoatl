@@ -1,0 +1,8 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+    <qresource>
+        <file>media/apple.wav</file>
+        <file>media/start.wav</file>
+        <file>media/fail.wav</file>
+    </qresource>
+</RCC>

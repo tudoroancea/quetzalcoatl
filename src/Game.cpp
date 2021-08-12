@@ -6,6 +6,7 @@
 
 #include "Game.h"
 
+#include <QSound>
 #include <algorithm>
 #include <iostream>
 #include <random>
@@ -81,6 +82,7 @@ void Game::update() {
             ++m_score;
             m_apple = regenerateApple();
             m_snake.grow(futureSnakeHead);
+            QSound::play(":/media/apple.wav");
         } else {
             m_snake.evolve(futureSnakeHead);
         }
