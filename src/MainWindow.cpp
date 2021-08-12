@@ -74,55 +74,83 @@ void MainWindow::paintEvent(QPaintEvent* event) {
 
     List body = m_game.snake().body();
 
-    auto drawTail = [&](unsigned i) {
-        QRectF rect(body[i].first * unit + x0+0.5, body[i].second * unit + y0+0.5, unit-1, unit-1);
-        int startAngle = 90 * 16;
-        int spanAngle = 270 * 16;
+    auto drawSemiCircle = [&]() {
+        QRectF rect(0.5, 0.5, unit - 1, unit - 1);
+        int startAngle = 270 * 16;
+        int spanAngle = 180 * 16;
         painter.setPen(darkBlue);
         painter.setBrush(darkBlue);
         painter.drawChord(rect, startAngle, spanAngle);
 
-
-        QRect background(body[i].first * unit + x0+ unit/2, body[i].second * unit + y0, unit/2, unit);  // NOLINT(cppcoreguidelines-narrowing-conversions)
+        QRect background(0, 0, unit / 2, unit);  // NOLINT(cppcoreguidelines-narrowing-conversions)
         painter.fillRect(background, darkBlue);
     };
-
-    Coord prevTail = body[body.size()-2];
+    auto drawSemiCircleWithEyes = [&]() {
+        drawSemiCircle();
+        painter.setBrush(Qt::black);
+        /*
+         * TODO (Mattéo) : add eyes
+         */
+    };
+    auto drawAngle = [&]() {
+        painter.setPen(darkBlue);
+        painter.setBrush(darkBlue);
+        painter.drawChord(QRectF(-unit, -unit, 2 * unit, 2 * unit), 270 * 16, 90 * 16);
+        QPolygonF triangle;
+        triangle << QPointF(1, 1) << QPointF(1, unit) << QPointF(unit, 1);
+        painter.drawConvexPolygon(triangle);
+    };
+    Coord prevTail = body[body.size() - 2];
 
 
     for (unsigned i(0); i < body.size(); i++) {
-        if (i==body.size()-1) {
-            if (Coord{m_game.snake().tail().first, m_game.snake().tail().second + 1} == prevTail) {
-                //dir = Down;
-                painter.translate(this->size().width()/2,this->size().height()/2);
-                //painter.translate(this->size().width()/2, this->size().height()/2);
+        painter.translate(body[i].first * unit + x0, body[i].second * unit + y0);
+        if (i == 0) {  // drawing the head
+            if (m_game.snake().direction() == Down) {  // Down
                 painter.rotate(90);
-                painter.translate(-(body[i].first * unit + x0), -(body[i].second * unit + y0));
-                //painter.translate(-(body[i].first * unit + x0), -(body[i].second * unit + y0));
-                drawTail(i);
-
-
-
-                painter.resetTransform();
-
+                painter.translate(0, -unit);
             }
-            if (Coord{m_game.snake().tail().first, m_game.snake().tail().second - 1} == prevTail) {
-                //dir = Up;
+            if (m_game.snake().direction() == Up) {  // Up
+                painter.rotate(270);
+                painter.translate(-unit, 0);
             }
-            if (Coord{m_game.snake().tail().first + 1, m_game.snake().tail().second} == prevTail) {
-                //dir = Right;
-
-                drawTail(i);
-
+            if (m_game.snake().direction() == Right) {  // Right
             }
-            if (Coord{m_game.snake().tail().first-1, m_game.snake().tail().second } == prevTail) {
-                //dir = Left;
+            if (m_game.snake().direction() == Left) {  // Left
+                painter.rotate(180);
+                painter.translate(-unit, -unit);
+            }
+            drawSemiCircleWithEyes();
+        } else if (i == body.size() - 1) {  // drawing the tail
+            if (Coord{m_game.snake().tail().first, m_game.snake().tail().second + 1} == prevTail) {  // Down
+                painter.rotate(270);
+                painter.translate(-unit, 0);
+            }
+            if (Coord{m_game.snake().tail().first, m_game.snake().tail().second - 1} == prevTail) {  // Up
+                painter.rotate(90);
+                painter.translate(0, -unit);
+            }
+            if (Coord{m_game.snake().tail().first + 1, m_game.snake().tail().second} == prevTail) {  // Right
+                painter.rotate(180);
+                painter.translate(-unit, -unit);
+            }
+            if (Coord{m_game.snake().tail().first - 1, m_game.snake().tail().second} == prevTail) {  // Left
+            }
+            drawSemiCircle();
+        } else {
+            if ((body[i - 1] == Coord{body[i].first + 1, body[i].second} && body[i + 1] == Coord{body[i].first - 1, body[i].second}) ||
+                (body[i - 1] == Coord{body[i].first - 1, body[i].second} && body[i + 1] == Coord{body[i].first + 1, body[i].second}) ||
+                (body[i - 1] == Coord{body[i].first, body[i].second + 1} && body[i + 1] == Coord{body[i].first, body[i].second - 1}) ||
+                (body[i - 1] == Coord{body[i].first, body[i].second - 1} && body[i + 1] == Coord{body[i].first, body[i].second + 1})) {
+                painter.fillRect(QRect(0, 0, unit, unit), darkBlue);
+            } else {
+                if (body[i - 1] == Coord{body[i].first, body[i].second - 1} && body[i + 1] == Coord{body[i].first - 1, body[i].second}) {  // drawin
+                    drawAngle();
+                } else if (body[i - 1] == Coord{body[i].first - 1, body[i].second} && body[i + 1] == Coord{body[i].first + 1, body[i].second}) {
+                }
             }
         }
-        else {
-            QRect background(body[i].first * unit + x0, body[i].second * unit + y0, unit, unit);  // NOLINT(cppcoreguidelines-narrowing-conversions)
-            painter.fillRect(background, darkBlue);
-        }
+        painter.resetTransform();
     }
 
     // DRAW APPLE =====================
@@ -138,8 +166,6 @@ void MainWindow::paintEvent(QPaintEvent* event) {
     painter.setPen(appleGreen);
     painter.setBrush(appleGreen);
     painter.drawChord(rect, startAngle, spanAngle);
-
-
 
     // QRect background(game->getApple().first*unit+x0, game->getApple().second*unit+y0, unit, unit);
     // painter.fillRect(background, darkRed);
@@ -185,6 +211,20 @@ void MainWindow::timerEvent(QTimerEvent* event) {
         m_bestScore = score;
         m_statusLabels[3]->setNum(m_bestScore);
     }
+    if (score == 2) {
+        this->QObject::killTimer(m_timerId);
+        m_timerId = 0;
+        QDialog dialog;
+        QLabel final("<a href=\"https://youtu.be/dQw4w9WgXcQ\">Vous êtes arrivés à la fin du jeu. Voici votre récompense. (ce n'est pas un virus)</a>", &dialog);
+        final.setTextFormat(Qt::RichText);
+        final.setTextInteractionFlags(Qt::TextBrowserInteraction);
+        final.setOpenExternalLinks(true);
+        dialog.show();
+        dialog.setFocus();
+        dialog.raise();
+        dialog.activateWindow();
+    }
+
     if (m_game.isFinished()) {
         QSound::play(":/media/fail.wav");
         this->QObject::killTimer(m_timerId);
