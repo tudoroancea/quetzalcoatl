@@ -28,6 +28,8 @@ public:
     void setApple();
     void update();
     Snake& getSnake();
+    void error();
+    Coord avancer();
 
 };
 #endif //QUETZALCOATL_GAME_H

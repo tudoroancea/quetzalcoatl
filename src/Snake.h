@@ -11,13 +11,16 @@
 
 #include "global.h"
 #include <deque>
-#include <utility>
 
 
 class Snake {
 private:
     List body;
     Direction direction = Down;
+
+
+
+
 
 public:
     Snake() = default;
@@ -31,8 +34,8 @@ public:
     Coord head();
     List getBody();
     Direction getDirection();
-    void setDirection(Direction const& newDirection);
 };
 
 
-#endif  // QUETZALCOATL_SNAKE_H
+
+#endif //QUETZALCOATL_SNAKE_H

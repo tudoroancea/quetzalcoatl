@@ -38,22 +38,23 @@ Coord Game::regenApple() {
 }
 
 void Game::update() {
-    Coord next;
-    switch (snake.getDirection()) {
-        case Up :
-            next = {0,1};
-            break;
-        case Down :
-            next = {0,-1};
-            break;
-        case Right :
-            next = {-1,0};
-            break;
-        case Left :
-            next = {0,1};
-            break;
+
+    Coord actual = {snake.head().first+avancer().first, snake.head().second+avancer().second};
+    if (actual.first > 14 || actual.second > 14) {
+        error();
     }
-    Coord actual = {snake.head().first+next.first, snake.head().second+next.second};
+    List body = snake.getBody();
+    auto it(std::find(body.begin(), body.end(), actual));
+    if (it != body.end() && it != std::prev(body.end()) /*actual != body.back()*/) {
+        error();
+    }
+    if (actual == apple) {
+        ++score;
+        apple = regenApple();
+        snake.grow();
+    }else {
+        snake.evolve();
+    }
 }
 unsigned Game::getScore(){
     return 0;
@@ -69,4 +70,25 @@ void Game::setApple(){
 }
 Snake& Game::getSnake(){
 return snake;
+}
+void Game::error(){
+
+}
+Coord Game::avancer(){
+    Coord next;
+    switch (snake.getDirection()) {
+        case Up :
+            next = {0,1};
+            break;
+        case Down :
+            next = {0,-1};
+            break;
+        case Right :
+            next = {-1,0};
+            break;
+        case Left :
+            next = {0,1};
+            break;
+    }
+    return next;
 }
