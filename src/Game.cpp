@@ -7,6 +7,7 @@
 #include "Game.h"
 
 #include <random>
+#include <algorithm>
 
 Game::Game() {
     List snakeInit;
@@ -24,17 +25,11 @@ Coord Game::regenApple() {
     std::mt19937 gen(rd());  //Standard mersenne_twister_engine seeded with rd()
     std::uniform_int_distribution<int> distrib(0, gridSize-1);
     List body = snake.getBody();
-    while (!success) {
-        Coord candidat = {distrib(gen), distrib(gen)};
-        for(auto const& coord : body) {
-            if (coord==candidat) {
-                continue;
-            }
-        }
-        success = true;
-        return candidat;
+    Coord candid({distrib(gen), distrib(gen)});
+    while (std::find(body.begin(), body.end(), candid) != body.end()) {
+        candid = {distrib(gen), distrib(gen)};
     }
-
+    return candid;
 }
 
 void Game::update() {
