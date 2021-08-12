@@ -7,17 +7,10 @@
 #pragma once
 
 #ifndef QUETZALCOATL_MAINWINDOW_HPP
-    #define QUETZALCOATL_MAINWINDOW_HPP
+#define QUETZALCOATL_MAINWINDOW_HPP
 
-    #include <QMainWindow>
+#include <QMainWindow>
 
-    #include "global.h"
-
-class Game {
-public:
-    Game() {}
-    int getScore() { return 0; }
-};
 
 QT_BEGIN_NAMESPACE
 class QLabel;

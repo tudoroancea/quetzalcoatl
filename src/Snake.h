@@ -7,11 +7,11 @@
 #pragma once
 
 #ifndef QUETZALCOATL_SNAKE_H
-    #define QUETZALCOATL_SNAKE_H
+#define QUETZALCOATL_SNAKE_H
 
-    #include "global.h"
+#include "global.h"
 
-    #include <deque>
+#include <deque>
 
 
 class Snake {
