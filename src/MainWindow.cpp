@@ -50,18 +50,24 @@ void MainWindow::paintEvent(QPaintEvent* event) {
     int x0 = (width-maxi)/2+10;
     int y0 = (height-maxi)/2+5;
     int size = maxi-20;
-    QRect background(x0,y0,size,size);
-    painter.fillRect(background, Qt::black);
     double unit((maxi-20)/gridSize);
     for(unsigned i(0); i < gridSize; i++) {
         for(unsigned j(0); j < gridSize; j++) {
-            QRect background(i*unit+x0, j*unit+y0, i*unit+unit+x0, j*unit+unit+y0);
+            QRect background(i*unit+x0, j*unit+y0, unit, unit);
+            std::cout << "on" << std::endl;
             if ((i + j) % 2 == 0) {
                 painter.fillRect(background, darkGreen);
+                std::cout << "off" << std::endl;
             } else {
                 painter.fillRect(background, lightGreen);
+                std::cout << "off" << std::endl;
             }
         }
+    }
+    List body = game->getSnake().getBody();
+    for(auto const& box : body) {
+        QRect background(box.first*unit+x0, box.second*unit+y0, unit, unit);
+        painter.fillRect(background, darkBlue);
     }
 
     // std::cerr << window.width() << ", " << window.height() << ", " << window.x() << ", " << window.y() << std::endl;
