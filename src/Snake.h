@@ -18,10 +18,6 @@ private:
     List body;
     Direction direction = Down;
 
-
-
-
-
 public:
     Snake() = default;
     Snake(Snake const&) = default;
@@ -34,8 +30,9 @@ public:
     Coord head();
     List getBody();
     Direction getDirection();
+    void setDirection(Direction const& newDirection);
 };
 
 
 
-#endif //QUETZALCOATL_SNAKE_H
+#endif  // QUETZALCOATL_SNAKE_H
