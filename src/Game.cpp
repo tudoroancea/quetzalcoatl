@@ -53,24 +53,27 @@ void Game::update() {
         std::cout << "error"<<std::endl;
         isFinished = true;
     }
+
     List body = snake.getBody();
     auto it(std::find(body.begin(), body.end(), futureSnakeHead));  // test if the future snake head will intercept its body
     if (it != body.end() && it != std::prev(body.end())) {
         std::cout << "error"<<std::endl;
-        emit error();
+        isFinished = true;
     }
-    if (futureSnakeHead == apple) {
-        ++score;
-        apple = regenApple();
-        snake.grow(futureSnakeHead);
-    } else {
-        snake.evolve(futureSnakeHead);
+    if (!isFinished) {
+        if (futureSnakeHead == apple) {
+            ++score;
+            apple = regenApple();
+            snake.grow(futureSnakeHead);
+        } else {
+            snake.evolve(futureSnakeHead);
+        }
+        std::cout << "Snake : ";
+        for (const auto& item : body) {
+            std::cout << "{" << item.first << "," << item.second << "} ; ";
+        }
+        std::cout << std::endl;
     }
-    std::cout << "Snake : ";
-    for (const auto& item : body) {
-        std::cout << "{" << item.first << "," << item.second << "} ; ";
-    }
-    std::cout << std::endl;
 }
 unsigned Game::getScore() const {
     return score;
