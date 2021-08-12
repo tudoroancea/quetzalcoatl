@@ -54,13 +54,10 @@ void MainWindow::paintEvent(QPaintEvent* event) {
     for(unsigned i(0); i < gridSize; i++) {
         for(unsigned j(0); j < gridSize; j++) {
             QRect background(i*unit+x0, j*unit+y0, unit, unit);
-            std::cout << "on" << std::endl;
             if ((i + j) % 2 == 0) {
                 painter.fillRect(background, darkGreen);
-                std::cout << "off" << std::endl;
             } else {
                 painter.fillRect(background, lightGreen);
-                std::cout << "off" << std::endl;
             }
         }
     }
@@ -69,6 +66,9 @@ void MainWindow::paintEvent(QPaintEvent* event) {
         QRect background(box.first*unit+x0, box.second*unit+y0, unit, unit);
         painter.fillRect(background, darkBlue);
     }
+
+    QRect background(game->getApple().first*unit+x0, game->getApple().second*unit+y0, unit, unit);
+    painter.fillRect(background, darkRed);
 
     // std::cerr << window.width() << ", " << window.height() << ", " << window.x() << ", " << window.y() << std::endl;
 }

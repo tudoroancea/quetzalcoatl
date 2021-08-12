@@ -19,6 +19,7 @@ constexpr int simulationBaseSpeed = 100;
 const QColor darkGreen = QColor::fromRgb(162,209,72);
 const QColor lightGreen = QColor::fromRgb(169,215,80);
 const QColor darkBlue = QColor::fromRgb(71,116,233);
+const QColor darkRed = QColor::fromRgb(231,71,29);
 
 typedef std::pair<NUM_TYPE, NUM_TYPE> Coord;
 bool operator==(Coord const& lhs, Coord const& rhs);

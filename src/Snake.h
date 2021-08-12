@@ -21,7 +21,7 @@ private:
 public:
     Snake() = default;
     Snake(Snake const&) = default;
-    explicit Snake(List body_) : body(std::move(body_)) {}
+    Snake(List body_, Direction dir_) : body(std::move(body_)), direction(dir_) {}
 
     void evolve(Coord next);
     void grow(Coord next);

@@ -13,11 +13,12 @@
 
 Game::Game() {
     List snakeInit;
-    Coord init = {(gridSize - 1) / 2 - snakeBaseSize / 2, (gridSize - 1) / 2};
+    Coord init = {1, (gridSize - 1) / 2};
     for (size_t i(0); i < snakeBaseSize; i++) {
         snakeInit.push_back({init.first + i, init.second});
     }
-    snake = Snake(snakeInit);
+    List ordered = List(snakeInit.rbegin(),snakeInit.rend());
+    snake = Snake(ordered,Right);
     apple = regenApple();
 }
 
@@ -39,9 +40,9 @@ Coord Game::avancer() const {
         case Down:
             return {0, -1};
         case Right:
-            return {-1, 0};
+            return {1, 0};
         case Left:
-            return {0, 1};
+            return {-1, 0};
     }
 }
 
