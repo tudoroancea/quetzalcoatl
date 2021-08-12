@@ -19,6 +19,9 @@ QT_END_NAMESPACE
 
 class MainWindow : public QMainWindow {
 private:
+    /*
+     * TODO : change this pointer to a normal variable
+     */
     Game* game;
     int score = 0;
     int bestScore = 0;
@@ -29,6 +32,8 @@ private:
      */
     int timerId = 0;
     int simulationSpeed = simulationBaseSpeed;
+
+    void initScores();
 
 protected:
     void paintEvent(QPaintEvent* event) override;
@@ -41,6 +46,7 @@ public:
 public slots:
     void startTimer();
     void killTimer();
+    void initScoreLabels() const;
 };
 
 

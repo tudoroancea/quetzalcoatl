@@ -12,6 +12,7 @@
 #include <QApplication>
 #include <QKeyEvent>
 #include <QLabel>
+#include <QMessageBox>
 #include <QPainter>
 #include <QScreen>
 #include <QStatusBar>
@@ -27,17 +28,22 @@ MainWindow::MainWindow() : game(new Game()), scoreLabel(new QLabel("0")), bestSc
     QList screens(QGuiApplication::screens());
     this->move(screens[(screens.size() > 1 ? 1 : 0)]->geometry().center() - frameGeometry().center());
     this->setUnifiedTitleAndToolBarOnMac(true);
-    this->statusBar()->addWidget(new QLabel("Current Score : "));
-    this->statusBar()->addWidget(scoreLabel);
-    this->statusBar()->addWidget(new QLabel("Best Score : "));
-    this->statusBar()->addWidget(bestScoreLabel);
+//    this->initScoreLabels();
 #ifdef RELEASE_MODE
     this->statusBar()->addPermanentWidget(new QLabel(QString("Version ").append(PROJECT_VERSION)));
 #endif
-    //    this->statusBar()->showMessage("Press space bar to start snake", 2000);
+    this->statusBar()->showMessage("Press space bar to start snake");
     this->show();
     this->setFocus();
 }
+
+void MainWindow::initScoreLabels() const {
+    statusBar()->addWidget(new QLabel("Current Score : "));
+    statusBar()->addWidget(scoreLabel);
+    statusBar()->addWidget(new QLabel("Best Score : "));
+    statusBar()->addWidget(bestScoreLabel);
+}
+
 void MainWindow::paintEvent(QPaintEvent* event) {
     QWidget::paintEvent(event);
     QPainter painter(this);
@@ -45,8 +51,8 @@ void MainWindow::paintEvent(QPaintEvent* event) {
 
     int height = this->size().height();
     int width = this->size().width();
-    int maxi = std::min(width,height-20);
-    //painter.setWindow((width-maxi)/2+10, (height-maxi)/2+5, maxi-20, maxi-20));
+    int maxi = std::min(width, height - 20);
+    // painter.setWindow((width-maxi)/2+10, (height-maxi)/2+5, maxi-20, maxi-20));
     int x0 = (width-maxi)/2+10;
     int y0 = (height-maxi)/2+5;
     int size = maxi-20;
@@ -88,7 +94,9 @@ void MainWindow::keyPressEvent(QKeyEvent* event) {
             break;
         case Qt::Key_Space: {
             if (timerId == 0) {
+                this->initScoreLabels();
                 this->startTimer();
+                this->statusBar()->clearMessage();
             }
             break;
         }
@@ -100,20 +108,29 @@ void MainWindow::keyPressEvent(QKeyEvent* event) {
 void MainWindow::timerEvent(QTimerEvent* event) {
     QObject::timerEvent(event);
     game->update();
+    this->update();
     score = (int) game->getScore();
     scoreLabel->setNum(score);
     if (score > bestScore) {
         bestScore = score;
         bestScoreLabel->setNum(bestScore);
     }
-    /*
-     * TODO : add message in paintEvent
-     */
 }
 
 void MainWindow::killTimer() {
     this->QObject::killTimer(timerId);
     timerId = 0;
+    QMessageBox::StandardButton result = QMessageBox::information(this, "You have been killed", "You have been killed. better luck next time !\nDo you want to try again?", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+    if (result == QMessageBox::Yes) {
+        delete game;
+        game = new Game();
+        this->update();
+        this->statusBar()->showMessage("Press space bar to start snake");
+    } else {
+        /*
+         *  TODO : Est-ce que si on répond non on ferme l'appli ?
+         */
+    }
 }
 void MainWindow::startTimer() {
     timerId = this->QObject::startTimer(simulationSpeed, Qt::PreciseTimer);
