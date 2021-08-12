@@ -133,5 +133,12 @@ void MainWindow::killTimer() {
     }
 }
 void MainWindow::startTimer() {
+    if(score < 5) simulationSpeed = simulationTabSpeed[0];
+    else if (score < 10 ) simulationSpeed = simulationTabSpeed[1];
+    else if (score < 15 ) simulationSpeed = simulationTabSpeed[2];
+    else if (score < 20 ) simulationSpeed = simulationTabSpeed[3];
+    else if (score < 25 ) simulationSpeed = simulationTabSpeed[4];
+    else if (score < 30 ) simulationSpeed = simulationTabSpeed[5];
+    else if (score < 50 ) simulationSpeed = simulationTabSpeed[6];
     timerId = this->QObject::startTimer(simulationSpeed, Qt::PreciseTimer);
 }

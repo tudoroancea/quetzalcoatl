@@ -31,7 +31,7 @@ private:
      * Si égal à 0 alors le timer est arrêté. Sinon indique l'id du timer.
      */
     int timerId = 0;
-    int simulationSpeed = simulationBaseSpeed;
+    int simulationSpeed = simulationTabSpeed[0];
 
     void initScores();
 

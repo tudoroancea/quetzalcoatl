@@ -10,12 +10,13 @@
 
 #include <deque>
 #include <QColor>
+#include <array>
 
 #define NUM_TYPE unsigned int
 
 constexpr NUM_TYPE gridSize = 15;
 constexpr unsigned int snakeBaseSize = 4;
-constexpr int simulationBaseSpeed = 200;
+constexpr std::array<int,7> simulationTabSpeed =  {210, 180, 150, 120, 90, 60, 30};
 const QColor darkGreen = QColor::fromRgb(162, 209, 72);
 const QColor lightGreen = QColor::fromRgb(169,215,80);
 const QColor darkBlue = QColor::fromRgb(71,116,233);
