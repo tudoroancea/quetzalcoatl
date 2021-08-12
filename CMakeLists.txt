@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.19)
-project(hackathon-starter LANGUAGES CXX	VERSION 0.0.0)
+cmake_minimum_required(VERSION 3.17)
+project(quetzalcoatl LANGUAGES CXX	VERSION 0.0.0)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -12,7 +12,7 @@ if(NOT CMAKE_BUILD_TYPE)
 	set(CMAKE_BUILD_TYPE "RELEASE" CACHE STRING "" FORCE)
 endif()
 # Warnings for Debug mode
-#set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -Wall -Wextra -Wpedantic -Wshadow -Wpointer-arith -Wcast-qual -Wno-missing-braces -Wswitch-default -Wcast-align -Wunreachable-code -Wuninitialized")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -Wall -Wextra -Wpedantic -Wshadow -Wpointer-arith -Wcast-qual -Wno-missing-braces -Wswitch-default -Wcast-align -Wunreachable-code -Wuninitialized")
 # Speed optimization for Release mode
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -Os")
 
