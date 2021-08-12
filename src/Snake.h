@@ -26,13 +26,14 @@ public:
     void evolve();
     void grow();
 
+    //    Getters & Setters ========================
+
     Coord tail();
     Coord head();
-    List getBody();
-    Direction getDirection();
+    [[nodiscard]] List getBody() const;
+    [[nodiscard]] Direction getDirection() const;
     void setDirection(Direction const& newDirection);
 };
-
 
 
 #endif  // QUETZALCOATL_SNAKE_H

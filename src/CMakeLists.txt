@@ -11,5 +11,5 @@ add_executable(${PROJECT_NAME}
         Game.h
         MainWindow.cpp
         MainWindow.hpp
-        )
+        global.cpp)
 target_link_libraries(${PROJECT_NAME} ${REQUIRED_LIBS_QUALIFIED})

@@ -22,12 +22,18 @@ private:
     Game* game;
     QLabel* scoreLabel;
     QLabel* bestScoreLabel;
+    int timerId = 0;
+    int simulationSpeed = simulationBaseSpeed;
 
 protected:
     void paintEvent(QPaintEvent* event) override;
 
 public:
     explicit MainWindow();
+
+public slots:
+    void startTimer();
+    void killTimer();
 };
 
 

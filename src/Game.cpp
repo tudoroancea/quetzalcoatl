@@ -6,24 +6,24 @@
 
 #include "Game.h"
 
-#include <random>
 #include <algorithm>
+#include <random>
+
 
 Game::Game() {
     List snakeInit;
     Coord init = {(gridSize - 1) / 2 - snakeBaseSize / 2, (gridSize - 1) / 2};
     for (size_t i(0); i < snakeBaseSize; i++) {
-        snakeInit.push_back({init.first+i,init.second});
+        snakeInit.push_back({init.first + i, init.second});
     }
     snake = Snake(snakeInit);
     apple = regenApple();
 }
 
 Coord Game::regenApple() {
-    bool success(false);
-    std::random_device rd;  //Will be used to obtain a seed for the random number engine
-    std::mt19937 gen(rd());  //Standard mersenne_twister_engine seeded with rd()
-    std::uniform_int_distribution<int> distrib(0, gridSize-1);
+    std::random_device rd;  // Will be used to obtain a seed for the random number engine
+    std::mt19937 gen(rd());  // Standard mersenne_twister_engine seeded with rd()
+    std::uniform_int_distribution<int> distrib(0, gridSize - 1);
     List body = snake.getBody();
     Coord candid({distrib(gen), distrib(gen)});
     while (std::find(body.begin(), body.end(), candid) != body.end()) {
@@ -31,59 +31,52 @@ Coord Game::regenApple() {
     }
     return candid;
 }
+Coord Game::avancer() const {
+    switch (snake.getDirection()) {
+        case Up:
+            return {0, 1};
+        case Down:
+            return {0, -1};
+        case Right:
+            return {-1, 0};
+        case Left:
+            return {0, 1};
+    }
+}
 
 void Game::update() {
-
-    Coord actual = {snake.head().first+avancer().first, snake.head().second+avancer().second};
-    if (actual.first > 14 || actual.second > 14) {
-        error();
+    Coord futureSnakeHead = {snake.head().first + avancer().first, snake.head().second + avancer().second};
+    if (futureSnakeHead.first > 14 || futureSnakeHead.second > 14) {
+        emit error();
     }
     List body = snake.getBody();
-    auto it(std::find(body.begin(), body.end(), actual));
-    if (it != body.end() && it != std::prev(body.end()) /*actual != body.back()*/) {
-        error();
+    auto it(std::find(body.begin(), body.end(), futureSnakeHead));  // test if the future snake head will intercept its body
+    if (it != body.end() && it != std::prev(body.end())) {
+        emit error();
     }
-    if (actual == apple) {
+    if (futureSnakeHead == apple) {
         ++score;
         apple = regenApple();
         snake.grow();
-    }else {
+    } else {
         snake.evolve();
     }
 }
-unsigned Game::getScore(){
-    return 0;
+unsigned Game::getScore() const {
+    return score;
 }
-Coord Game::getApple(){
-return Coord();
+Coord Game::getApple() const {
+    return apple;
 }
-void Game::setScore(){
-
+void Game::setScore(unsigned int const& newScore) {
+    score = newScore;
 }
-void Game::setApple(){
-
+void Game::setApple(Coord const& newApple) {
+    apple = newApple;
 }
-Snake& Game::getSnake(){
-return snake;
+Snake& Game::getSnake() {
+    return snake;
 }
-void Game::error(){
-
-}
-Coord Game::avancer(){
-    Coord next;
-    switch (snake.getDirection()) {
-        case Up :
-            next = {0,1};
-            break;
-        case Down :
-            next = {0,-1};
-            break;
-        case Right :
-            next = {-1,0};
-            break;
-        case Left :
-            next = {0,1};
-            break;
-    }
-    return next;
-}
+// void Game::error() {
+//     /* TODO : to implement */
+// }

@@ -10,26 +10,38 @@
 #include "Snake.h"
 #include "global.h"
 
+#include <QObject>
 #include <deque>
 
 
-class Game {
+class Game : public QObject {
+    Q_OBJECT
 private:
     Snake snake;
     Coord apple;
     unsigned score = 0;
 
+    //    Utility functions ======================
+
+    Coord regenApple();
+    [[nodiscard]] Coord avancer() const;
+
 public:
     Game();
-    Coord regenApple();
-    unsigned getScore();
-    Coord getApple();
-    void setScore();
-    void setApple();
-    void update();
-    Snake& getSnake();
-    void error();
-    Coord avancer();
 
+    //    Getters & Setters ========================
+
+    [[nodiscard]] unsigned getScore() const;
+    void setScore(unsigned int const& newScore);
+    [[nodiscard]] Coord getApple() const;
+    void setApple(Coord const& newApple);
+    Snake& getSnake();
+
+    //    Evolution =============================
+
+    void update();
+
+signals:
+    void error();
 };
-#endif //QUETZALCOATL_GAME_H
+#endif  // QUETZALCOATL_GAME_H

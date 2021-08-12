@@ -16,10 +16,10 @@ void Snake::evolve() {
 }
 void Snake::grow() {
 }
-List Snake::getBody() {
+List Snake::getBody() const {
     return body;
 }
-Direction Snake::getDirection() {
+Direction Snake::getDirection() const {
     return direction;
 }
 void Snake::setDirection(const Direction& newDirection) {

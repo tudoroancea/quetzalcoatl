@@ -5,7 +5,7 @@
 //
 
 #include "MainWindow.hpp"
-//#include "global.h"
+#include "global.h"
 
 #include <iostream>
 
@@ -18,6 +18,7 @@
 
 MainWindow::MainWindow() : game(new Game()), scoreLabel(new QLabel), bestScoreLabel(new QLabel("0")) {
     scoreLabel->setNum((int) game->getScore());
+    connect(game, SIGNAL(error()), this, SLOT(killTimer()));
 
     this->setCentralWidget(new QWidget);
     this->setWindowTitle(PROJECT_NAME);
@@ -44,4 +45,10 @@ void MainWindow::paintEvent(QPaintEvent* event) {
     QPainter painter(this);
     QRect window(painter.window());
     std::cerr << window.width() << ", " << window.height() << ", " << window.x() << ", " << window.y() << std::endl;
+}
+void MainWindow::killTimer() {
+    this->QObject::killTimer(timerId);
+}
+void MainWindow::startTimer() {
+    timerId = this->QObject::startTimer(simulationSpeed, Qt::PreciseTimer);
 }
