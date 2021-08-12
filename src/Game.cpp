@@ -36,9 +36,9 @@ Coord Game::regenApple() {
 Coord Game::avancer() const {
     switch (snake.getDirection()) {
         case Up:
-            return {0, 1};
-        case Down:
             return {0, -1};
+        case Down:
+            return {0, 1};
         case Right:
             return {1, 0};
         case Left:
@@ -50,11 +50,13 @@ void Game::update() {
     std::cerr << "Game::update()" << std::endl;
     Coord futureSnakeHead = {snake.head().first + avancer().first, snake.head().second + avancer().second};
     if (futureSnakeHead.first > 14 || futureSnakeHead.second > 14) {
-        emit error();
+        std::cout << "error"<<std::endl;
+        isFinished = true;
     }
     List body = snake.getBody();
     auto it(std::find(body.begin(), body.end(), futureSnakeHead));  // test if the future snake head will intercept its body
     if (it != body.end() && it != std::prev(body.end())) {
+        std::cout << "error"<<std::endl;
         emit error();
     }
     if (futureSnakeHead == apple) {
@@ -84,6 +86,9 @@ void Game::setApple(Coord const& newApple) {
 }
 Snake& Game::getSnake() {
     return snake;
+}
+bool Game::getIsFinished(){
+return isFinished;
 }
 // void Game::error() {
 //     /* TODO : to implement */

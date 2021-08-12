@@ -20,6 +20,7 @@ private:
     Snake snake;
     Coord apple;
     unsigned score = 0;
+    bool isFinished = false;
 
     //    Utility functions ======================
 
@@ -36,7 +37,7 @@ public:
     [[nodiscard]] Coord getApple() const;
     void setApple(Coord const& newApple);
     Snake& getSnake();
-
+    bool getIsFinished();
     //    Evolution =============================
 
     void update();
