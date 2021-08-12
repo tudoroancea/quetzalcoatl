@@ -87,10 +87,23 @@ void MainWindow::paintEvent(QPaintEvent* event) {
     };
     auto drawSemiCircleWithEyes = [&]() {
         drawSemiCircle();
+        painter.setBrush(Qt::white);
+        painter.setPen(Qt::white);
+
+        QRectF rectangle( 0.15 * unit,  0.05 * unit, 0.5 * unit, 0.4 * unit);
+        painter.drawEllipse(rectangle);
+
+        QRectF rect(0.15 * unit, 0.55 * unit, 0.5 * unit, 0.4 * unit);
+        painter.drawEllipse(rect);
+
         painter.setBrush(Qt::black);
-        /*
-         * TODO (Mattéo) : add eyes
-         */
+        painter.setPen(Qt::black);
+
+        QRectF rectangle2( 0.35 * unit,  0.15 * unit, 0.2 * unit, 0.2 * unit);
+        painter.drawEllipse(rectangle2);
+
+        QRectF rect2(0.35 * unit, 0.65 * unit, 0.2 * unit, 0.2 * unit);
+        painter.drawEllipse(rect2);
     };
     auto drawAngle = [&]() {
         painter.setPen(darkBlue);
