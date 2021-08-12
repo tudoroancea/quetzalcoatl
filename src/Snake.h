@@ -23,8 +23,8 @@ public:
     Snake(Snake const&) = default;
     explicit Snake(List body_) : body(std::move(body_)) {}
 
-    void evolve();
-    void grow();
+    void evolve(Coord next);
+    void grow(Coord next);
 
     //    Getters & Setters ========================
 

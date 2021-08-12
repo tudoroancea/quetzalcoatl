@@ -57,9 +57,9 @@ void Game::update() {
     if (futureSnakeHead == apple) {
         ++score;
         apple = regenApple();
-        snake.grow();
+        snake.grow(futureSnakeHead);
     } else {
-        snake.evolve();
+        snake.evolve(futureSnakeHead);
     }
 }
 unsigned Game::getScore() const {

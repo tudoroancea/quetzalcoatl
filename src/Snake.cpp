@@ -12,9 +12,12 @@ Coord Snake::tail() {
 Coord Snake::head() {
     return body.front();
 }
-void Snake::evolve() {
+void Snake::evolve(Coord next) {
+    body.push_front(next);
+    body.pop_back();
 }
-void Snake::grow() {
+void Snake::grow(Coord next) {
+    body.push_front(next);
 }
 List Snake::getBody() const {
     return body;

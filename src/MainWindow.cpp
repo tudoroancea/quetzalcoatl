@@ -44,7 +44,29 @@ void MainWindow::paintEvent(QPaintEvent* event) {
     QWidget::paintEvent(event);
     QPainter painter(this);
     QRect window(painter.window());
-    std::cerr << window.width() << ", " << window.height() << ", " << window.x() << ", " << window.y() << std::endl;
+
+    int height = this->size().height();
+    int width = this->size().width();
+    int maxi = std::min(width,height-20);
+    //painter.setWindow((width-maxi)/2+10, (height-maxi)/2+5, maxi-20, maxi-20));
+    int x0 = (width-maxi)/2+10;
+    int y0 = (height-maxi)/2+5;
+    int size = maxi-20;
+    QRect background(x0,y0,size,size);
+    painter.fillRect(background, Qt::black);
+    double unit((maxi-20)/gridSize);
+    for(unsigned i(0); i < gridSize; i++) {
+        for(unsigned j(0); j < gridSize; j++) {
+            QRect background(i*unit+x0, j*unit+y0, i*unit+unit+x0, j*unit+unit+y0);
+            if((i+j)%2 == 0) {
+                painter.fillRect(background, darkGreen);
+            }else {
+                painter.fillRect(background, lightGreen);
+            }
+        }
+    }
+
+    //std::cerr << window.width() << ", " << window.height() << ", " << window.x() << ", " << window.y() << std::endl;
 }
 void MainWindow::killTimer() {
     this->QObject::killTimer(timerId);

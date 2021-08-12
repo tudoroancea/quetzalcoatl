@@ -9,13 +9,15 @@
 #define QUETZALCOATL_CONST_H
 
 #include <deque>
+#include <QColor>
 
 #define NUM_TYPE unsigned int
 
 constexpr NUM_TYPE gridSize = 15;
 constexpr unsigned int snakeBaseSize = 4;
 constexpr int simulationBaseSpeed = 100;
-
+const QColor darkGreen = QColor::fromRgb(162,209,72);
+const QColor lightGreen = QColor::fromRgb(169,215,80);
 
 typedef std::pair<NUM_TYPE, NUM_TYPE> Coord;
 bool operator==(Coord const& lhs, Coord const& rhs);
