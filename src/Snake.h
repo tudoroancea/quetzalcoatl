@@ -27,9 +27,18 @@ public:
     void grow(Coord next);
 
     //    Getters & Setters ========================
-
-    [[nodiscard]] Coord tail();
-    [[nodiscard]] Coord head();
+    /**
+     * Return the body cell which is the <offset>th neighbor of the tail.
+     * @param offset
+     * @return the tail itself if the <offset> is ill conditioned.
+     */
+    [[nodiscard]] Coord tail(unsigned int const& offset = 0) const;
+    /**
+     * Return the body cell which is the <offset>th neighbor of the head.
+     * @param offset
+     * @return the head itself if the <offset> is ill conditioned.
+     */
+    [[nodiscard]] Coord head(unsigned int const& offset = 0) const;
     [[nodiscard]] List body() const;
     [[nodiscard]] Direction direction() const;
     void setDirection(Direction const& newDirection);

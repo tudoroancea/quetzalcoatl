@@ -6,11 +6,19 @@
 
 #include "Snake.h"
 
-Coord Snake::tail() {
-    return m_body.back();
+Coord Snake::tail(unsigned int const& offset) const {
+    if (offset < m_body.size()) {
+        return m_body[m_body.size() - 1 - offset];
+    } else {
+        return m_body.back();
+    }
 }
-Coord Snake::head() {
-    return m_body.front();
+Coord Snake::head(unsigned int const& offset) const {
+    if (offset < m_body.size()) {
+        return m_body[offset];
+    } else {
+        return m_body.front();
+    }
 }
 void Snake::evolve(Coord next) {
     m_body.push_front(next);

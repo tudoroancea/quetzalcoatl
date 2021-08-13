@@ -8,3 +8,9 @@
 
 bool operator==(Coord const& lhs, Coord const& rhs) { return lhs.first == rhs.first && lhs.second == rhs.second; }
 bool operator!=(Coord const& lhs, Coord const& rhs) { return !(lhs == rhs); }
+Coord operator+(Coord const& lhs, Coord const& rhs) {
+    return {lhs.first + rhs.first, lhs.second + rhs.second};
+}
+Coord operator-(Coord const& lhs, Coord const& rhs) {
+    return {lhs.first - rhs.first, lhs.second - rhs.second};
+}

@@ -32,6 +32,9 @@ const QColor darkRed = QColor::fromRgb(231, 71, 29);
 typedef std::pair<NUM_TYPE, NUM_TYPE> Coord;
 bool operator==(Coord const& lhs, Coord const& rhs);
 bool operator!=(Coord const& lhs, Coord const& rhs);
+Coord operator+(Coord const& lhs, Coord const& rhs);
+Coord operator-(Coord const& lhs, Coord const& rhs);
+
 typedef std::deque<Coord> List;
 enum Direction { Up,
                  Down,

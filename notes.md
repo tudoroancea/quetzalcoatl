@@ -9,12 +9,12 @@
 
 ## Game mechanism :
 
-[ ] Make sure we cannot make a U-turn (especially at low speeds)
+[x] Make sure we cannot make a U-turn (especially at low speeds)  
 [ ] Optimize apple generation for high scores (too much checks with a large snake body)
 
 ## Misc :
 
-[ ] Start avec une touche quelconque  
+[x] Start avec une touche quelconque  
 [ ] Create a special message for winning the game  
 [ ] Serialize data to save the best scores between sessions
 [ ] Create permanent settings

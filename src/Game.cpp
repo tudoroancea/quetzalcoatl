@@ -68,17 +68,17 @@ void Game::begin() {
 }
 
 void Game::update() {
-    Coord futureSnakeHead = {m_snake.head().first + nextStep().first, m_snake.head().second + nextStep().second};
-    if (futureSnakeHead.first > 14 || futureSnakeHead.second > 14) {
-        std::cout << "error" << std::endl;
+    Coord futureSnakeHead = m_snake.head() + nextStep();
+    if (futureSnakeHead.first >= gridSize || futureSnakeHead.second >= gridSize) {
+        // The snake hit hits head on a wall
         m_isFinished = true;
-    }
-    List body = m_snake.body();
-    if (std::find(body.begin(), body.end(), futureSnakeHead) != body.end() && futureSnakeHead != m_snake.tail()) {
-        m_isFinished = true;
-    }
-    if (!m_isFinished) {
-        if (futureSnakeHead == m_apple) {
+    } else {
+        List body(m_snake.body());
+        if (std::find(body.begin(), body.end(), futureSnakeHead) != body.end() && futureSnakeHead != m_snake.tail()) {
+            // The snake bit his own body
+            m_isFinished = true;
+        } else if (futureSnakeHead == m_apple) {
+            // The snake bit the apple
             ++m_score;
             m_apple = regenerateApple();
             m_snake.grow(futureSnakeHead);
