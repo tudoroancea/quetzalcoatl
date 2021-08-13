@@ -1,34 +1,26 @@
-- utiliser fleches pour bouger
-- spawns des pommes aléatoires uniformes
-- grille de 15x15
-- taille du m_snake au départ : 4, on grandit à chaque fois qu'on mange une pomme
--
+# TODO :
 
-graphisme :
+## Graphics :
 
-features :
+[ ] Enhance tail and head to always match corners  
+[ ] Add color details on the body  
+[ ] Add a thinner tail  
+[ ] Add a forked tongue on the head
 
-- best m_score sur une session
-- start avec une touche quelconque
-- recommencer quand on a fini (best m_score stocké en dehors de la classe Game)
-- settings : taille de la grille, taille de base du m_snake, vitesse de base du m_snake
+## Game mechanism :
 
-Long term :
+[ ] Make sure we cannot make a U-turn (especially at low speeds)
+[ ] Optimize apple generation for high scores (too much checks with a large snake body)
 
-- serialization des données
+## Misc :
 
-```cpp
-    if (score < 5) m_simulationSpeed = simulationTabSpeed[0];
-    else if (score < 10)
-        m_simulationSpeed = simulationTabSpeed[1];
-    else if (score < 15)
-        m_simulationSpeed = simulationTabSpeed[2];
-    else if (score < 20)
-        m_simulationSpeed = simulationTabSpeed[3];
-    else if (score < 25)
-        m_simulationSpeed = simulationTabSpeed[4];
-    else if (score < 30)
-        m_simulationSpeed = simulationTabSpeed[5];
-    else if (score < 50)
-        m_simulationSpeed = simulationTabSpeed[6];
-```
+[ ] Start avec une touche quelconque  
+[ ] Create a special message for winning the game  
+[ ] Serialize data to save the best scores between sessions
+[ ] Create permanent settings
+
+- taille de la grille (et donc nombre de pommes à manger pour gagner)
+- taille de base du m_snake
+- paliers de vitesse
+- augmentation de la vitesse tous les ??? pommes mangées 
+ 

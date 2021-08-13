@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.17)
-project(quetzalcoatl LANGUAGES CXX VERSION 1.0.0)
+project(quetzalcoatl LANGUAGES CXX VERSION 1.1.0)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -15,6 +15,9 @@ endif ()
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -Wall -Wextra -Wpedantic -Wshadow -Wpointer-arith -Wcast-qual -Wno-missing-braces -Wswitch-default -Wcast-align -Wunreachable-code -Wuninitialized")
 # Speed optimization for Release mode
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -Os")
+# Flags for code profiling
+#set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer")
 
 # Useful pre-compile definitions
 if (CMAKE_BUILD_TYPE MATCHES "Debug")
