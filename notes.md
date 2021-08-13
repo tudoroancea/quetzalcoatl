@@ -10,7 +10,7 @@
 ## Game mechanism :
 
 [x] Make sure we cannot make a U-turn (especially at low speeds)  
-[ ] Optimize apple generation for high scores (too much checks with a large snake body)
+[x] Optimize apple generation for high scores (too much checks with a large snake body)
 
 ## Misc :
 
@@ -22,5 +22,6 @@
 - taille de la grille (et donc nombre de pommes à manger pour gagner)
 - taille de base du m_snake
 - paliers de vitesse
-- augmentation de la vitesse tous les ??? pommes mangées 
- 
+- augmentation de la vitesse tous les ??? pommes mangées
+
+# Notes

@@ -10,20 +10,31 @@
 #define QUETZALCOATL_SNAKE_H
 
 #include "global.h"
+#include <array>
 #include <deque>
 #include <utility>
+#include <vector>
 
 class Snake {
 private:
     List m_body;
+    std::array<std::array<bool, gridSize>, gridSize> m_positions{};
     Direction m_direction = Down;
 
 public:
     Snake() = default;
     Snake(Snake const&) = default;
-    Snake(List body, Direction direction) : m_body(std::move(body)), m_direction(direction) {}
+    Snake(List body, Direction direction);
 
+    /**
+     * Does nothing if <next> is not in the grid
+     * @param next
+     */
     void evolve(Coord next);
+    /**
+     * Does nothing if <next> is not in the grid
+     * @param next
+     */
     void grow(Coord next);
 
     //    Getters & Setters ========================
@@ -39,9 +50,18 @@ public:
      * @return the head itself if the <offset> is ill conditioned.
      */
     [[nodiscard]] Coord head(unsigned int const& offset = 0) const;
-    [[nodiscard]] List body() const;
+    [[maybe_unused]] [[nodiscard]] List const& body() const;
     [[nodiscard]] Direction direction() const;
-    void setDirection(Direction const& newDirection);
+    /**
+     * Does nothing if the given direction makes a U-turn.
+     */
+    void setDirection(Direction const&);
+    /**
+     * @return true if the given Coord is part of the body, flase otherwise.
+     */
+    bool contains(Coord const&);
+    [[nodiscard]] size_t size() const;
+    Coord const& operator[](size_t const& index) const;
 };
 
 

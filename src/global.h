@@ -35,11 +35,19 @@ bool operator!=(Coord const& lhs, Coord const& rhs);
 Coord operator+(Coord const& lhs, Coord const& rhs);
 Coord operator-(Coord const& lhs, Coord const& rhs);
 
+
 typedef std::deque<Coord> List;
 enum Direction { Up,
                  Down,
                  Left,
                  Right };
+
+constexpr Coord UpCoord{0, -1};
+constexpr Coord DownCoord{0, 1};
+constexpr Coord LeftCoord{-1, 0};
+constexpr Coord RightCoord{1, 0};
+
+[[maybe_unused]] Coord coord(Direction const&);
 
 
 #endif  // QUETZALCOATL_CONST_H

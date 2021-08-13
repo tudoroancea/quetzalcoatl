@@ -123,27 +123,27 @@ void MainWindow::paintEvent(QPaintEvent* event) {
         painter.drawConvexPolygon(triangle);
     };
 
-    List body = m_game.snake().body();
-    Coord prevTail = m_game.snake().tail(1);
+    Coord prevTail(m_game.snake().tail(1));
+    Snake const& snake(m_game.snake());
 
-    for (unsigned i(0); i < body.size(); i++) {
-        painter.translate(body[i].first * unit + x0, body[i].second * unit + y0);
+    for (unsigned i(0); i < snake.size(); i++) {
+        painter.translate(snake[i].first * unit + x0, snake[i].second * unit + y0);
         if (i == 0) {  // drawing the head
-            if (m_game.snake().direction() == Down) {  // Down
+            if (snake.direction() == Down) {  // Down
                 painter.rotate(90);
                 painter.translate(0, -unit);
-            } else if (m_game.snake().direction() == Up) {  // Up
+            } else if (snake.direction() == Up) {  // Up
                 painter.rotate(270);
                 painter.translate(-unit, 0);
-            } else if (m_game.snake().direction() == Left) {  // Left
+            } else if (snake.direction() == Left) {  // Left
                 painter.rotate(180);
                 painter.translate(-unit, -unit);
-            } else if (m_game.snake().direction() == Right) {  // Right
+            } else if (snake.direction() == Right) {  // Right
                 // Nothing to do
             }
             drawSemiCircleWithEyes();
-        } else if (i == body.size() - 1) {  // drawing the tail
-            Coord currentTail(m_game.snake().tail());
+        } else if (i == snake.size() - 1) {  // drawing the tail
+            Coord currentTail(snake.tail());
             if (currentTail + Coord{0, 1} == prevTail) {  // Down
                 painter.rotate(270);
                 painter.translate(-unit, 0);
@@ -158,31 +158,31 @@ void MainWindow::paintEvent(QPaintEvent* event) {
             }
             drawSemiCircle();
         } else {
-            if ((body[i - 1] == body[i] + Coord{1, 0} && body[i + 1] == body[i] + Coord{-1, 0}) ||
-                (body[i - 1] == body[i] + Coord{-1, 0} && body[i + 1] == body[i] + Coord{1, 0}) ||
-                (body[i - 1] == body[i] + Coord{0, 1} && body[i + 1] == body[i] + Coord{0, -1}) ||
-                (body[i - 1] == body[i] + Coord{0, -1} && body[i + 1] == body[i] + Coord{0, 1})) {
+            if ((snake[i - 1] == snake[i] + Coord{1, 0} && snake[i + 1] == snake[i] + Coord{-1, 0}) ||
+                (snake[i - 1] == snake[i] + Coord{-1, 0} && snake[i + 1] == snake[i] + Coord{1, 0}) ||
+                (snake[i - 1] == snake[i] + Coord{0, 1} && snake[i + 1] == snake[i] + Coord{0, -1}) ||
+                (snake[i - 1] == snake[i] + Coord{0, -1} && snake[i + 1] == snake[i] + Coord{0, 1})) {
                 // Drawing normal body cell
                 painter.fillRect(QRect(0, 0, unit, unit), darkBlue);
             } else {
                 // Drawing corner body cell
-                if ((body[i - 1] == body[i] + Coord{0, -1} && body[i + 1] == body[i] + Coord{1, 0}) ||
-                    (body[i + 1] == body[i] + Coord{0, -1} && body[i - 1] == body[i] + Coord{1, 0})) {
+                if ((snake[i - 1] == snake[i] + Coord{0, -1} && snake[i + 1] == snake[i] + Coord{1, 0}) ||
+                    (snake[i + 1] == snake[i] + Coord{0, -1} && snake[i - 1] == snake[i] + Coord{1, 0})) {
                     // drawing right/up angle
                     painter.rotate(90);
                     painter.translate(0, -unit);
-                } else if ((body[i - 1] == body[i] + Coord{1, 0} && body[i + 1] == body[i] + Coord{0, 1}) ||
-                           (body[i + 1] == body[i] + Coord{1, 0} && body[i - 1] == body[i] + Coord{0, 1})) {
+                } else if ((snake[i - 1] == snake[i] + Coord{1, 0} && snake[i + 1] == snake[i] + Coord{0, 1}) ||
+                           (snake[i + 1] == snake[i] + Coord{1, 0} && snake[i - 1] == snake[i] + Coord{0, 1})) {
                     // drawing right/down angle
                     painter.rotate(180);
                     painter.translate(-unit, -unit);
-                } else if ((body[i - 1] == body[i] + Coord{-1, 0} && body[i + 1] == body[i] + Coord{0, 1}) ||
-                           (body[i + 1] == body[i] + Coord{-1, 0} && body[i - 1] == body[i] + Coord{0, 1})) {
+                } else if ((snake[i - 1] == snake[i] + Coord{-1, 0} && snake[i + 1] == snake[i] + Coord{0, 1}) ||
+                           (snake[i + 1] == snake[i] + Coord{-1, 0} && snake[i - 1] == snake[i] + Coord{0, 1})) {
                     // drawing left/down angle
                     painter.rotate(270);
                     painter.translate(-unit, 0);
-                } else if ((body[i - 1] == body[i] + Coord{0, -1} && body[i + 1] == body[i] + Coord{-1, 0}) ||
-                           (body[i + 1] == body[i] + Coord{0, -1} && body[i - 1] == body[i] + Coord{-1, 0})) {
+                } else if ((snake[i - 1] == snake[i] + Coord{0, -1} && snake[i + 1] == snake[i] + Coord{-1, 0}) ||
+                           (snake[i + 1] == snake[i] + Coord{0, -1} && snake[i - 1] == snake[i] + Coord{-1, 0})) {
                     // drawing left/up angle
                     // Nothing to do
                 }
@@ -212,7 +212,7 @@ void MainWindow::paintEvent(QPaintEvent* event) {
 #pragma clang diagnostic pop
 
 void MainWindow::keyPressEvent(QKeyEvent* event) {
-    if (!m_game.hasBegun() && event->modifiers() == Qt::NoModifier && QGuiApplication::keyboardModifiers() == Qt::NoModifier) {
+    if (!m_game.hasBegun() && (event->key() == Qt::Key_Space || event->key() == Qt::Key_Down || event->key() == Qt::Key_Up || event->key() == Qt::Key_Left || event->key() == Qt::Key_Right)) {
         m_game.begin();
         this->statusBar()->clearMessage();
         this->showLabels();
@@ -222,24 +222,16 @@ void MainWindow::keyPressEvent(QKeyEvent* event) {
     } else {
         switch (event->key()) {
             case Qt::Key_Up:
-                if (m_game.snake().direction() != Down && m_game.snake().head(1) != m_game.snake().head() + Coord{0, -1}) {
-                    m_game.snake().setDirection(Up);
-                }
+                m_game.snake().setDirection(Up);
                 break;
             case Qt::Key_Down:
-                if (m_game.snake().direction() != Up && m_game.snake().head(1) != m_game.snake().head() + Coord{0, 1}) {
-                    m_game.snake().setDirection(Down);
-                }
+                m_game.snake().setDirection(Down);
                 break;
             case Qt::Key_Left:
-                if (m_game.snake().direction() != Right && m_game.snake().head(1) != m_game.snake().head() + Coord{-1, 0}) {
-                    m_game.snake().setDirection(Left);
-                }
+                m_game.snake().setDirection(Left);
                 break;
             case Qt::Key_Right:
-                if (m_game.snake().direction() != Left && m_game.snake().head(1) != m_game.snake().head() + Coord{1, 0}) {
-                    m_game.snake().setDirection(Right);
-                }
+                m_game.snake().setDirection(Right);
                 break;
             default:
                 break;

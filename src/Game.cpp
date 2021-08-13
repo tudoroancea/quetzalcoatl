@@ -8,7 +8,6 @@
 
 #include <QSound>
 #include <algorithm>
-#include <iostream>
 #include <random>
 
 
@@ -27,13 +26,13 @@ Coord Game::regenerateApple() {
     std::random_device rd;  // Will be used to obtain a seed for the random number engine
     std::mt19937 gen(rd());  // Standard mersenne_twister_engine seeded with rd()
     std::uniform_int_distribution<int> distrib(0, gridSize - 1);
-    List body = m_snake.body();
-    Coord candid({distrib(gen), distrib(gen)});
-    while (std::find(body.begin(), body.end(), candid) != body.end()) {
-        candid = {distrib(gen), distrib(gen)};
+    Coord candidate({distrib(gen), distrib(gen)});
+    while (m_snake.contains(candidate)) {
+        candidate = {distrib(gen), distrib(gen)};
     }
-    return candid;
+    return candidate;
 }
+
 Coord Game::nextStep() const {
     switch (m_snake.direction()) {
         case Up:
@@ -50,12 +49,15 @@ Coord Game::nextStep() const {
 unsigned Game::score() const {
     return m_score;
 }
+
 Coord Game::apple() const {
     return m_apple;
 }
+
 Snake& Game::snake() {
     return m_snake;
 }
+
 bool Game::isFinished() const {
     return m_isFinished;
 }
@@ -63,6 +65,7 @@ bool Game::isFinished() const {
 bool Game::hasBegun() const {
     return m_hasBegun;
 }
+
 void Game::begin() {
     m_hasBegun = true;
 }
@@ -73,15 +76,14 @@ void Game::update() {
         // The snake hit hits head on a wall
         m_isFinished = true;
     } else {
-        List body(m_snake.body());
-        if (std::find(body.begin(), body.end(), futureSnakeHead) != body.end() && futureSnakeHead != m_snake.tail()) {
+        if (m_snake.contains(futureSnakeHead) && futureSnakeHead != m_snake.tail()) {
             // The snake bit his own body
             m_isFinished = true;
         } else if (futureSnakeHead == m_apple) {
             // The snake bit the apple
             ++m_score;
-            m_apple = regenerateApple();
             m_snake.grow(futureSnakeHead);
+            m_apple = regenerateApple();
             QSound::play(":/media/apple.wav");
         } else {
             m_snake.evolve(futureSnakeHead);

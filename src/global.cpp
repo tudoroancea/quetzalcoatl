@@ -14,3 +14,16 @@ Coord operator+(Coord const& lhs, Coord const& rhs) {
 Coord operator-(Coord const& lhs, Coord const& rhs) {
     return {lhs.first - rhs.first, lhs.second - rhs.second};
 }
+
+[[maybe_unused]] Coord coord(Direction const& dir) {
+    switch (dir) {
+        case Up:
+            return UpCoord;
+        case Down:
+            return DownCoord;
+        case Left:
+            return LeftCoord;
+        case Right:
+            return RightCoord;
+    }
+}
