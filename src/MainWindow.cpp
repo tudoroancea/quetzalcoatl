@@ -24,7 +24,10 @@ MainWindow::MainWindow()
       m_statusLabels({new QLabel("Current Score : "),
                       new QLabel("0"),
                       new QLabel("Best Score : "),
-                      new QLabel("0")}) {
+                      new QLabel("0")})
+// clang-format off
+{
+    // clang-format on
     //    Status bar =====================================
     for (const auto& label : m_statusLabels) {
         this->statusBar()->addWidget(label);
@@ -90,7 +93,7 @@ void MainWindow::paintEvent(QPaintEvent* event) {
         painter.setBrush(Qt::white);
         painter.setPen(Qt::white);
 
-        QRectF rectangle( 0.15 * unit,  0.05 * unit, 0.5 * unit, 0.4 * unit);
+        QRectF rectangle(0.15 * unit, 0.05 * unit, 0.5 * unit, 0.4 * unit);
         painter.drawEllipse(rectangle);
 
         QRectF rect(0.15 * unit, 0.55 * unit, 0.5 * unit, 0.4 * unit);
@@ -99,7 +102,7 @@ void MainWindow::paintEvent(QPaintEvent* event) {
         painter.setBrush(Qt::black);
         painter.setPen(Qt::black);
 
-        QRectF rectangle2( 0.35 * unit,  0.15 * unit, 0.2 * unit, 0.2 * unit);
+        QRectF rectangle2(0.35 * unit, 0.15 * unit, 0.2 * unit, 0.2 * unit);
         painter.drawEllipse(rectangle2);
 
         QRectF rect2(0.35 * unit, 0.65 * unit, 0.2 * unit, 0.2 * unit);
@@ -148,6 +151,7 @@ void MainWindow::paintEvent(QPaintEvent* event) {
                 painter.translate(-unit, -unit);
             }
             if (Coord{m_game.snake().tail().first - 1, m_game.snake().tail().second} == prevTail) {  // Left
+                // Nothing to do
             }
             drawSemiCircle();
         } else {
@@ -170,7 +174,7 @@ void MainWindow::paintEvent(QPaintEvent* event) {
                     painter.rotate(270);
                     painter.translate(-unit, 0);
                 } else if ((body[i - 1] == Coord{body[i].first + 1, body[i].second} && body[i + 1] == Coord{body[i].first, body[i].second + 1}) ||
-                           (body[i + 1] == Coord{body[i].first + 1, body[i].second} && body[i - 1] == Coord{body[i].first, body[i].second + 1})) {
+                           (body[i + 1] == Coord{body[i].first + 1, body[i].second} && body[i - 1] == Coord{body[i].first, body[i].second + 1})) {  // drawing right/down angle
                     painter.rotate(180);
                     painter.translate(-unit, -unit);
                 }
@@ -238,7 +242,9 @@ void MainWindow::timerEvent(QTimerEvent* event) {
         m_bestScore = score;
         m_statusLabels[3]->setNum(m_bestScore);
     }
-    if (score == 2) {
+    if (score == 225) {
+        /*
+         * TODO : create special event for winning the game
         this->QObject::killTimer(m_timerId);
         m_timerId = 0;
         QDialog dialog;
@@ -249,7 +255,7 @@ void MainWindow::timerEvent(QTimerEvent* event) {
         dialog.show();
         dialog.setFocus();
         dialog.raise();
-        dialog.activateWindow();
+        dialog.activateWindow();*/
     }
 
     if (m_game.isFinished()) {
@@ -266,7 +272,7 @@ void MainWindow::timerEvent(QTimerEvent* event) {
         }
     } else {
         for (int i(1); i <= 6; ++i) {
-            if (score == 2 * i) {
+            if (score == 5 * i) {
                 m_simulationSpeed = simulationTabSpeed[i];
                 this->QObject::killTimer(m_timerId);
                 this->startTimer();  // also replace the timerId with the new one
