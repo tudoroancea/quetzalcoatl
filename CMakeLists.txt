@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.17)
 project(quetzalcoatl LANGUAGES CXX VERSION 1.1.0)
 
+set(PROJECT_BASE_NAME ${PROJECT_NAME})
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # C++ standard

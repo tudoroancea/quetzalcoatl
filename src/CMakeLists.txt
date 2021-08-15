@@ -1,17 +1,24 @@
-project(${PROJECT_NAME}-src)
+project(${PROJECT_BASE_NAME}-src)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-add_executable(${PROJECT_NAME}
-        main.cpp
-        global.h
+set(SRC
         global.cpp
         Snake.cpp
-        Snake.h
         Game.cpp
-        Game.h
         MainWindow.cpp
+        )
+set(HDR
+        global.h
+        Snake.h
+        Game.h
         MainWindow.hpp
+        )
+add_library(${PROJECT_NAME}-lib STATIC ${SRC} ${HDR})
+target_link_libraries(${PROJECT_NAME}-lib ${REQUIRED_LIBS_QUALIFIED})
+
+add_executable(${PROJECT_NAME}
+        main.cpp
         resources.qrc
         )
-target_link_libraries(${PROJECT_NAME} ${REQUIRED_LIBS_QUALIFIED})
+target_link_libraries(${PROJECT_NAME} ${REQUIRED_LIBS_QUALIFIED} ${PROJECT_NAME}-lib)
