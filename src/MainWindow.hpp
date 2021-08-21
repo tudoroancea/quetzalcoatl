@@ -12,25 +12,34 @@
 #include "Game.h"
 
 #include <QMainWindow>
+#include <QPropertyAnimation>
+#include <QTimer>
 
 QT_BEGIN_NAMESPACE
 class QLabel;
 QT_END_NAMESPACE
 
 class MainWindow : public QMainWindow {
+    Q_OBJECT
+    Q_PROPERTY(int headProperty MEMBER m_headProperty WRITE setHeadProperty NOTIFY headPropertyChanged)
+
 private:
     Game m_game;
     int m_bestScore = 0;
     QList<QLabel*> m_statusLabels;
-    /**
-     * Si égal à 0 alors le timer est arrêté. Sinon indique l'id du timer.
-     */
-    int m_timerId = 0;
     int m_simulationSpeed = simulationTabSpeed[0];
+    QTimer m_simulationTimer = QTimer();
+    QPropertyAnimation animation = QPropertyAnimation(this, "headProperty");
 
     void hideLabels() const;
     void showLabels() const;
-    void startTimer();
+    void startSimulationTimer();
+    void stopSimulationTimer();
+
+    int m_headProperty;
+
+private slots:
+    void simulationTimerEvent();
 
 protected:
     void paintEvent(QPaintEvent* event) override;
@@ -39,6 +48,12 @@ protected:
 
 public:
     explicit MainWindow();
+
+    void setHeadProperty(int headProperty);
+
+public:
+signals:
+    void headPropertyChanged();
 };
 
 

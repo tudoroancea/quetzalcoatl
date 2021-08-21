@@ -14,9 +14,10 @@
 
 #define NUM_TYPE unsigned int
 
+constexpr unsigned int ticksByPeriod = 5;
 constexpr NUM_TYPE gridSize = 15;
 constexpr unsigned int snakeBaseSize = 4;
-constexpr std::array<int, 7> simulationTabSpeed = {210,
+constexpr std::array<int, 7> simulationTabSpeed = {500,
                                                    180,
                                                    150,
                                                    120,

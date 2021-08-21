@@ -18,7 +18,6 @@
 #include <QSound>
 #include <QStatusBar>
 
-
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunknown-pragmas"
 MainWindow::MainWindow()
@@ -40,6 +39,10 @@ MainWindow::MainWindow()
 #endif
     this->statusBar()->showMessage("Press space bar to start snake");
 
+    m_simulationTimer.setInterval(m_simulationSpeed);
+    connect(&m_simulationTimer, SIGNAL(timeout()), this, SLOT(simulationTimerEvent()), Qt::UniqueConnection);
+    connect(this, SIGNAL(headPropertyChanged()), this, SLOT(update()));
+
     //    Window misc =================================
     this->setCentralWidget(new QWidget);
     this->setWindowTitle(PROJECT_NAME);
@@ -56,44 +59,65 @@ MainWindow::MainWindow()
 #pragma ide diagnostic ignored "cppcoreguidelines-narrowing-conversions"
 void MainWindow::paintEvent(QPaintEvent* event) {
     QWidget::paintEvent(event);
+    // Defining the painter
     QPainter painter(this);
-
-
     painter.setRenderHint(QPainter::Antialiasing);
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     painter.setRenderHint(QPainter::HighQualityAntialiasing);
 #pragma clang diagnostic pop
 
-    int height = this->size().height();
-    int width = this->size().width();
-    int maxi = std::min(width, height - 20);
-    int x0 = (width - maxi) / 2 + 10;
-    int y0 = (height - maxi) / 2 + 5;
+    // Some useful variables for drawing the grid
+    int windowHeight = this->size().height();
+    int windowWidth = this->size().width();
+    int maxi = std::min(windowWidth, windowHeight - 20);
+    int x0 = (windowWidth - maxi) / 2 + 10;
+    int y0 = (windowHeight - maxi) / 2 + 5;
     double unit((maxi - 20) / gridSize);  // NOLINT(bugprone-integer-division)
+    int margin(1);  // the numbers of pixels between the border of a cell and the snake. On each side
+
+    // Drawing the grid
     for (unsigned i(0); i < gridSize; i++) {
         for (unsigned j(0); j < gridSize; j++) {
-            QRect background(i * unit + x0, j * unit + y0, unit, unit);
-            if ((i + j) % 2 == 0) {
-                painter.fillRect(background, darkGreen);
-            } else {
-                painter.fillRect(background, lightGreen);
-            }
+            painter.fillRect(i * unit + x0, j * unit + y0, unit, unit, ((i + j) % 2 == 0 ? darkGreen : lightGreen));
         }
     }
 
+    // Some useful lambdas (used as nested functions) for drawing the head and the tail
+    [[maybe_unused]] auto drawHead = [&]() {
+        // first part
+        painter.fillRect(0, margin, m_headProperty + unit / 2, unit - 2 * margin, darkBlue);  // NOLINT(cppcoreguidelines-narrowing-conversions)
 
-    auto drawSemiCircle = [&]() {
-        QRectF rect(0.5, 0.5, unit - 1, unit - 1);
+        // round part
         int startAngle = 270 * 16;
         int spanAngle = 180 * 16;
         painter.setPen(darkBlue);
         painter.setBrush(darkBlue);
-        painter.drawChord(rect, startAngle, spanAngle);
+        painter.drawChord(m_headProperty, 2 * margin, unit - 2 * margin, unit - 4 * margin, 270 * 16, 180 * 16);
 
-        QRect background(0, 0, unit / 2, unit);  // NOLINT(cppcoreguidelines-narrowing-conversions)
-        painter.fillRect(background, darkBlue);
+        // drawing eyes
+        painter.setBrush(Qt::white);
+        painter.setPen(Qt::white);
+        painter.drawEllipse(m_headProperty + 0.15 * unit, 0.05 * unit, 0.5 * unit, 0.4 * unit);
+        painter.drawEllipse(m_headProperty + 0.15 * unit, 0.55 * unit, 0.5 * unit, 0.4 * unit);
+
+        painter.setBrush(Qt::black);
+        painter.setPen(Qt::black);
+        painter.drawEllipse(m_headProperty + 0.35 * unit, 0.15 * unit, 0.2 * unit, 0.2 * unit);
+        painter.drawEllipse(m_headProperty + 0.35 * unit, 0.65 * unit, 0.2 * unit, 0.2 * unit);
     };
+    auto drawSemiCircle = [&]() {
+        // rectangle part
+        painter.fillRect(0, margin, unit / 2, unit - 2 * margin, darkBlue);  // NOLINT(cppcoreguidelines-narrowing-conversions)
+
+        // round part
+        int startAngle = 270 * 16;
+        int spanAngle = 180 * 16;
+        painter.setPen(darkBlue);
+        painter.setBrush(darkBlue);
+        painter.drawChord(0, 2 * margin, unit - 2 * margin, unit - 4 * margin, startAngle, spanAngle);
+    };
+
     auto drawSemiCircleWithEyes = [&]() {
         drawSemiCircle();
         painter.setBrush(Qt::white);
@@ -141,7 +165,8 @@ void MainWindow::paintEvent(QPaintEvent* event) {
             } else if (snake.direction() == Right) {  // Right
                 // Nothing to do
             }
-            drawSemiCircleWithEyes();
+            // drawSemiCircleWithEyes();
+            drawHead();
         } else if (i == snake.size() - 1) {  // drawing the tail
             Coord currentTail(snake.tail());
             if (currentTail + Coord{0, 1} == prevTail) {  // Down
@@ -193,7 +218,6 @@ void MainWindow::paintEvent(QPaintEvent* event) {
     }
 
     // DRAW APPLE =====================
-
     QRectF rectangle(m_game.apple().first * unit + x0 + 0.2 * unit, m_game.apple().second * unit + y0 + 0.3 * unit, 0.6 * unit, 0.6 * unit);
     painter.setPen(darkRed);
     painter.setBrush(darkRed);
@@ -205,9 +229,6 @@ void MainWindow::paintEvent(QPaintEvent* event) {
     painter.setPen(appleGreen);
     painter.setBrush(appleGreen);
     painter.drawChord(rect, startAngle, spanAngle);
-
-    // QRect background(game->getApple().first*unit+x0, game->getApple().second*unit+y0, unit, unit);
-    // painter.fillRect(background, darkRed);
 }
 #pragma clang diagnostic pop
 
@@ -217,7 +238,7 @@ void MainWindow::keyPressEvent(QKeyEvent* event) {
         this->statusBar()->clearMessage();
         this->showLabels();
         m_simulationSpeed = simulationTabSpeed[0];
-        this->startTimer();
+        this->startSimulationTimer();
         QSound::play(":/media/start.wav");
     } else {
         switch (event->key()) {
@@ -252,8 +273,7 @@ void MainWindow::timerEvent(QTimerEvent* event) {
     if (score == 225) {
         /*
          * TODO : create special event for winning the game
-        this->QObject::killTimer(m_timerId);
-        m_timerId = 0;
+        this->stopSimulationTimer(;
         QDialog dialog;
         QLabel final("<a href=\"https://youtu.be/dQw4w9WgXcQ\">Vous êtes arrivés à la fin du jeu. Voici votre récompense. (ce n'est pas un virus)</a>", &dialog);
         final.setTextFormat(Qt::RichText);
@@ -267,8 +287,7 @@ void MainWindow::timerEvent(QTimerEvent* event) {
 
     if (m_game.isFinished()) {
         QSound::play(":/media/fail.wav");
-        this->QObject::killTimer(m_timerId);
-        m_timerId = 0;
+        this->stopSimulationTimer();
         QMessageBox::StandardButton result = QMessageBox::information(this, "You have been killed", "You have been killed. Better luck next time !\nDo you want to try again?", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
         if (result == QMessageBox::Yes) {
             m_game = Game();
@@ -280,26 +299,74 @@ void MainWindow::timerEvent(QTimerEvent* event) {
     } else {
         for (int i(1); i <= 6; ++i) {
             if (score == 5 * i) {
+                this->stopSimulationTimer();
                 m_simulationSpeed = simulationTabSpeed[i];
-                this->QObject::killTimer(m_timerId);
-                this->startTimer();  // also replace the timerId with the new one
+                this->startSimulationTimer();  // also replace the timerId with the new one
             }
         }
     }
 }
 
-void MainWindow::startTimer() {
-    m_timerId = this->QObject::startTimer(m_simulationSpeed, Qt::PreciseTimer);
-}
 void MainWindow::hideLabels() const {
-    for (const auto& label : m_statusLabels) {
+    for (auto const& label : m_statusLabels) {
         label->hide();
     }
 }
+
 void MainWindow::showLabels() const {
-    for (const auto& label : m_statusLabels) {
+    for (auto const& label : m_statusLabels) {
         label->show();
     }
+}
+void MainWindow::simulationTimerEvent() {
+    m_game.update();
+
+    animation.stop();
+    animation.setDuration(m_simulationSpeed);
+    animation.setStartValue(int(0));
+    animation.setEndValue(int((std::min(this->size().width(), this->size().height() - 20) - 20) / gridSize));
+    animation.start();
+
+    int score = (int) m_game.score();
+    m_statusLabels[1]->setNum(score);
+    if (score > m_bestScore) {
+        m_bestScore = score;
+        m_statusLabels[3]->setNum(m_bestScore);
+    }
+    if (m_game.isFinished()) {
+        this->stopSimulationTimer();
+        QSound::play(":/media/fail.wav");
+        QMessageBox::StandardButton result = QMessageBox::information(this, "You have been killed", "You have been killed. Better luck next time !\nDo you want to try again?", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+        if (result == QMessageBox::Yes) {
+            m_game = Game();
+            this->update();
+            this->hideLabels();
+            this->setHeadProperty(0);
+            m_statusLabels[1]->setNum(0);
+            this->statusBar()->showMessage("Press space bar to start snake");
+        }
+    } else {
+        for (int i(1); i <= 6; ++i) {
+            if (score == 5 * i) {
+                this->stopSimulationTimer();
+                m_simulationSpeed = simulationTabSpeed[i];
+                this->startSimulationTimer();  // also replace the timerId with the new one
+            }
+        }
+    }
+}
+
+void MainWindow::startSimulationTimer() {
+    m_simulationTimer.start();
+}
+
+void MainWindow::stopSimulationTimer() {
+    m_simulationTimer.stop();
+}
+
+void MainWindow::setHeadProperty(int headProperty) {
+    m_headProperty = headProperty;
+    emit headPropertyChanged();
 }
 
 #pragma clang diagnostic pop
