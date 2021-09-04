@@ -44,12 +44,14 @@ public:
      * @return the tail itself if the <offset> is ill conditioned.
      */
     [[nodiscard]] Coord tail(unsigned int const& offset = 0) const;
+    [[nodiscard]] List::const_iterator tailAsIterator(unsigned int const& offset = 0) const;
     /**
      * Return the body cell which is the <offset>th neighbor of the head.
      * @param offset
      * @return the head itself if the <offset> is ill conditioned.
      */
     [[nodiscard]] Coord head(unsigned int const& offset = 0) const;
+    [[nodiscard]] List::const_iterator headAsIterator(unsigned int const& offset = 0) const;
     [[maybe_unused]] [[nodiscard]] List const& body() const;
     [[nodiscard]] Direction direction() const;
     /**

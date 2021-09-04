@@ -22,12 +22,26 @@ Coord Snake::tail(unsigned int const& offset) const {
         return m_body.back();
     }
 }
+List::const_iterator Snake::tailAsIterator(const unsigned int& offset) const {
+    // if (offset < m_body.size()) {
+    return m_body.cend() - 1 - offset;
+    // } else {
+    //     return m_body.cbegin();
+    // }
+}
 Coord Snake::head(unsigned int const& offset) const {
     if (offset < m_body.size()) {
         return m_body[offset];
     } else {
         return m_body.front();
     }
+}
+List::const_iterator Snake::headAsIterator(const unsigned int& offset) const {
+    // if (offset < m_body.size()) {
+    return m_body.cbegin() + offset;
+    // } else {
+    //     return m_body.cend();
+    // }
 }
 void Snake::evolve(Coord next) {
     if (next.first <= 14 && next.second <= 14) {
