@@ -89,4 +89,5 @@ void Game::update() {
             m_snake.evolve(futureSnakeHead);
         }
     }
+    qDebug("%d,%d", futureSnakeHead.first, futureSnakeHead.second);
 }

@@ -41,9 +41,11 @@ MainWindow::MainWindow()
 #endif
     this->statusBar()->showMessage("Press space bar to start snake");
 
-    m_simulationTimer.setInterval(m_simulationSpeed);
-    connect(&m_simulationTimer, SIGNAL(timeout()), this, SLOT(simulationTimerEvent()), Qt::UniqueConnection);
-    connect(this, SIGNAL(headPropertyChanged()), this, SLOT(update()), Qt::UniqueConnection);
+    // Timers ===============
+    m_changeDirectionTimer.setSingleShot(true);
+    m_repaintTimer.callOnTimeout([&]() {
+        this->update();
+    });
 
     //    Window misc =================================
     this->setCentralWidget(new QWidget);
@@ -84,93 +86,32 @@ void MainWindow::paintEvent(QPaintEvent* event) {
             painter.fillRect(i * unit + x0, j * unit + y0, unit, unit, ((i + j) % 2 == 0 ? darkGreen : lightGreen));
         }
     }
-
-    // Some useful lambdas (used as nested functions) for drawing the head and the tail
-    auto drawHeadWithoutNeck = [&]() {
-        // QPainterPath path;
-        // path.moveTo(0,-unit*0.25);
-        // path.lineTo(0,unit*0.25);
-        // path.arcTo(0,unit*0.1875, unit*0.25, unit*0.125, 180,90);
-        // path.arcTo(-unit*0.25, -unit*0.3125, unit*0.55, unit*0.625, 270,180);
-        // path.arcTo(0,-unit*0.3125, unit*0.25, unit*0.0625, 90,90);
-        // path.closeSubpath();
-        // painter.translate(0,unit*0.5);
-        painter.setPen(darkBlue);
-        painter.setBrush(darkBlue);
-        painter.drawChord(-unit * 0.5, unit * 0.25, unit, unit * 0.5, 270 * 16, 180 * 16);
-        // painter.drawPath(path);
-        /*
-         * TODO : add eyes
-         */
-    };
-    enum HeadOrientation { Straight,
-                           RightTurn,
-                           LeftTurn };
-    [[maybe_unused]] auto drawHead = [&](HeadOrientation orientation) {
-        painter.setPen(darkBlue);
-        painter.setBrush(darkBlue);
-        if (orientation == Straight) {
-            painter.drawRect(0, unit * 0.25, unit * 0.25 + m_headProperty, unit * 0.25);
-            painter.translate(unit * 0.25 + m_headProperty, 0);
-            drawHeadWithoutNeck();
-            painter.translate(-unit * 0.25 - m_headProperty, 0);
-        } else if (orientation == RightTurn) {
-            painter.rotate(90);
-            painter.translate(0, -unit * 0.5 + m_headProperty);
-            drawHeadWithoutNeck();
-            painter.translate(0, unit * 0.5 - m_headProperty);
-            painter.rotate(-90);
-            QPainterPath path;
-            path.moveTo(0, unit * 0.75);
-            path.quadTo(unit * 0.25, unit * 0.75, unit * 0.25, unit * 0.5 + (m_headProperty <= unit * 0.5 ? m_headProperty : unit * 0.5));
-            path.lineTo(unit * 0.75, unit * 0.5 + (m_headProperty <= unit * 0.5 ? m_headProperty : unit * 0.5));
-            path.quadTo(unit * 0.75, unit * 0.25, unit, unit * 0.25);
-            path.closeSubpath();
-            painter.drawPath(path);
-            if (m_headProperty >= unit * 0.5) {
-                painter.fillRect(unit * 0.25, unit, unit * 0.5, m_headProperty - unit * 0.5, darkBlue);
-            }
-        } else {
-            // orientation == RightTurn
-            painter.rotate(270);
-            painter.translate(-unit * 0.5 + m_headProperty, 0);
-            drawHeadWithoutNeck();
-            painter.translate(unit * 0.5 - m_headProperty, 0);
-            painter.rotate(-270);
-            QPainterPath path;
-            path.moveTo(0, unit * 0.25);
-            path.quadTo(unit * 0.25, unit * 0.25, unit * 0.25, unit * 0.5 - (m_headProperty <= unit * 0.5 ? m_headProperty : unit * 0.5));
-            path.lineTo(unit * 0.75, unit * 0.5 - (m_headProperty <= unit * 0.5 ? m_headProperty : unit * 0.5));
-            path.quadTo(unit * 0.75, unit * 0.75, 0, unit * 0.75);
-            path.closeSubpath();
-            painter.drawPath(path);
-            if (m_headProperty >= unit * 0.5) {
-                painter.fillRect(unit * 0.25, unit * 0.5 - m_headProperty, unit * 0.5, m_headProperty - unit * 0.5, darkBlue);
-            }
+    auto drawFractionBody = [&](enum Direction dir, double x, double y, double step) {
+        QRectF rect;
+        switch (dir) {
+            case Right:
+                rect = QRectF(0, 0, unit / steps, unit);
+                // painter.resetTransform();
+                painter.translate(step, 0);
+                break;
+            case Left:
+                rect = QRectF(0, 0, -unit / steps, unit);
+                // painter.resetTransform();
+                painter.translate(-step, 0);
+                break;
+            case Up:
+                rect = QRectF(0, 0, unit, -unit / steps);
+                // painter.resetTransform();
+                painter.translate(0, -step);
+                break;
+            case Down:
+                rect = QRectF(0, 0, unit, unit / steps);
+                // painter.resetTransform();
+                painter.translate(0, step);
+                break;
         }
-
-        // // first part
-        // painter.fillRect(0, margin, m_headProperty + unit / 2, unit - 2 * margin, darkBlue);  // NOLINT(cppcoreguidelines-narrowing-conversions)
-        //
-        // // round part
-        // int startAngle = 270 * 16;
-        // int spanAngle = 180 * 16;
-        // painter.setPen(darkBlue);
-        // painter.setBrush(darkBlue);
-        // painter.drawChord(m_headProperty, 2 * margin, unit - 2 * margin, unit - 4 * margin, 270 * 16, 180 * 16);
-        //
-        // // drawing eyes
-        // painter.setBrush(Qt::white);
-        // painter.setPen(Qt::white);
-        // painter.drawEllipse(m_headProperty + 0.15 * unit, 0.05 * unit, 0.5 * unit, 0.4 * unit);
-        // painter.drawEllipse(m_headProperty + 0.15 * unit, 0.55 * unit, 0.5 * unit, 0.4 * unit);
-        //
-        // painter.setBrush(Qt::black);
-        // painter.setPen(Qt::black);
-        // painter.drawEllipse(m_headProperty + 0.35 * unit, 0.15 * unit, 0.2 * unit, 0.2 * unit);
-        // painter.drawEllipse(m_headProperty + 0.35 * unit, 0.65 * unit, 0.2 * unit, 0.2 * unit);
+        painter.fillRect(rect, darkBlue);
     };
-
 
     auto drawSemiCircle = [&]() {
         // rectangle part
@@ -225,17 +166,16 @@ void MainWindow::paintEvent(QPaintEvent* event) {
 
     Snake const& snake(m_game.snake());
 
-    // draw head
-    // draw tail and its neighbor
-    // draw the rest of the body
-    for (unsigned int i(1); i < snake.size() - 2; ++i) {
-    }
-    for (unsigned i(0); i < snake.size(); i++) {
-        painter.translate(snake[i].first * unit + x0, snake[i].second * unit + y0);
-        if (i == 0) {  // drawing the head
-            HeadOrientation orientation;
-            Coord head(m_game.snake().head()), preHead(m_game.snake().head(1));
+    unsigned tic = himym();
 
+    for (unsigned i(0); i < snake.size(); i++) {
+        double x = snake[i].first * unit + x0;
+        double y = snake[i].second * unit + y0;
+        painter.translate(x, y);
+        if (i == 0) {  // drawing the head
+            for (unsigned j(0); j < tic; j++) {
+                drawFractionBody(snake.direction(), x, y, j / steps);
+            }
             if (snake.direction() == Down) {  // Down
                 painter.rotate(90);
                 painter.translate(0, -unit);
@@ -365,44 +305,151 @@ void MainWindow::keyPressEvent(QKeyEvent* event) {
         this->startSimulationTimer();
         QSound::play(":/media/start.wav");
     } else {
-        switch (event->key()) {
-            case Qt::Key_Up:
-                m_game.snake().setDirection(Up);
-                break;
-            case Qt::Key_Down:
-                m_game.snake().setDirection(Down);
-                break;
-            case Qt::Key_Left:
-                m_game.snake().setDirection(Left);
-                break;
-            case Qt::Key_Right:
-                m_game.snake().setDirection(Right);
-                break;
-            default:
-                break;
+        if (event->key() == Qt::Key_Down || event->key() == Qt::Key_Up || event->key() == Qt::Key_Left || event->key() == Qt::Key_Right) {
+            Direction newDirection;
+            switch (event->key()) {
+                case Qt::Key_Up:
+                    newDirection = Up;
+                    break;
+                case Qt::Key_Down:
+                    newDirection = Down;
+                    break;
+                case Qt::Key_Left:
+                    newDirection = Left;
+                    break;
+                case Qt::Key_Right:
+                    newDirection = Right;
+                    break;
+                default:
+                    break;
+            }
+            // if (m_changeDirectionTimer.isActive()) {
+            //     // on change de direction mtn
+            //     this->stopSimulationTimer();
+            m_game.snake().setDirection(newDirection);
+            //     this->startSimulationTimer();
+            // } else {
+            //     delayedDirection = newDirection;
+            // }
         }
     }
 }
 
+void MainWindow::timerEvent(QTimerEvent* event) {
+    QObject::timerEvent(event);
+    /*m_repaintTimer.stop();
+    if (delayedDirection) {
+        m_game.snake().setDirection(delayedDirection.value());
+        delayedDirection = std::nullopt;
+    }
+    m_game.update();
+    m_changeDirectionTimer.setSingleShot(true);
+    m_repaintTimer.setTimerType(Qt::PreciseTimer);
+    m_repaintTimer.callOnTimeout([&]() {
+        this->update();
+        qDebug("%d | %d", himym(), m_repaintTimer.remainingTime());
+    });
+    qDebug("%d", m_simulationSpeed/steps);
+    m_repaintTimer.setInterval(m_simulationSpeed/steps);
+    m_repaintTimer.start();
+    qDebug("%d", m_repaintTimer.isActive());
+    int score = (int) m_game.score();
+    m_statusLabels[1]->setNum(score);
+    if (score > m_bestScore) {
+        m_bestScore = score;
+        m_statusLabels[3]->setNum(m_bestScore);
+    }
+    if (score == 225) {
+        */
+    /*
+   * TODO : create special event for winning the game
+  this->QObject::killTimer(m_timerId);
+  m_timerId = 0;
+  QDialog dialog;
+  QLabel final("<a href=\"https://youtu.be/dQw4w9WgXcQ\">Vous êtes arrivés à la fin du jeu. Voici votre récompense. (ce n'est pas un virus)</a>", &dialog);
+  final.setTextFormat(Qt::RichText);
+  final.setTextInteractionFlags(Qt::TextBrowserInteraction);
+  final.setOpenExternalLinks(true);
+  dialog.show();
+  dialog.setFocus();
+  dialog.raise();
+  dialog.activateWindow();*/
+    /*
+}
+
+if (m_game.isFinished()) {
+QSound::play(":/media/fail.wav");
+m_repaintTimer.stop();
+this->stopSimulationTimer();
+m_timerId = 0;
+QMessageBox::StandardButton result = QMessageBox::information(this, "You have been killed", "You have been killed. Better luck next time !\nDo you want to try again?", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+if (result == QMessageBox::Yes) {
+m_game = Game();
+this->update();
+this->hideLabels();
+m_statusLabels[1]->setNum(0);
+this->statusBar()->showMessage("Press space bar to start snake");
+}
+} else {
+for (int i(1); i <= 3; ++i) {
+if (score == 5 * i) {
+this->stopSimulationTimer();
+m_simulationSpeed = simulationTabSpeed[i];
+this->startSimulationTimer();  // also replace the timerId with the new one
+}
+}
+this->startChangeDirectionTimer();
+}*/
+}
+
+void MainWindow::startSimulationTimer() {
+    m_simulationTimer.setTimerType(Qt::PreciseTimer);
+    m_simulationTimer.callOnTimeout(this, &MainWindow::simulationTimerEvent);
+    m_simulationTimer.start(m_simulationSpeed);
+    qDebug("startSimulationTimer");
+}
+
+void MainWindow::stopSimulationTimer() {
+    qDebug("stopSimulationTimer");
+    m_simulationTimer.stop();
+    this->stopRepaintTimer();
+    this->stopChangeDirectionTimer();
+}
+
 void MainWindow::hideLabels() const {
-    for (auto const& label : m_statusLabels) {
+    for (const auto& label : m_statusLabels) {
         label->hide();
     }
 }
-
 void MainWindow::showLabels() const {
-    for (auto const& label : m_statusLabels) {
+    for (const auto& label : m_statusLabels) {
         label->show();
     }
 }
-void MainWindow::simulationTimerEvent() {
-    m_game.update();
+void MainWindow::startChangeDirectionTimer() {
+    qDebug("\t\t\tstartChangeDirectionTimer");
+    m_changeDirectionTimer.setSingleShot(true);
+    m_changeDirectionTimer.start(m_simulationSpeed / 2);
+}
+void MainWindow::stopChangeDirectionTimer() {
+    m_changeDirectionTimer.stop();
+    qDebug("\t\t\t\tstopChangeDirectionTimer");
+}
+unsigned int MainWindow::himym() const {
+    if (m_repaintTimer.isActive()) {
+        return steps * (1.0 - double(m_simulationTimer.remainingTime()) / double(m_simulationSpeed));
+    } else {
+        return steps;
+    }
+}
 
-    animation.stop();
-    animation.setDuration(m_simulationSpeed);
-    animation.setStartValue(int(0));
-    animation.setEndValue(int((std::min(this->size().width(), this->size().height() - 20) - 20) / gridSize));
-    animation.start();
+void MainWindow::simulationTimerEvent() {
+    // m_repaintTimer.stop();
+    // if (delayedDirection) {
+    //     m_game.snake().setDirection(delayedDirection.value());
+    //     delayedDirection = std::nullopt;
+    // }
+    m_game.update();
 
     int score = (int) m_game.score();
     m_statusLabels[1]->setNum(score);
@@ -413,6 +460,11 @@ void MainWindow::simulationTimerEvent() {
     if (m_game.isFinished()) {
         this->stopSimulationTimer();
         QSound::play(":/media/fail.wav");
+        m_repaintTimer.stop();
+        this->stopSimulationTimer();
+        this->stopChangeDirectionTimer();
+        // this->stopRepaintTimer();
+        m_timerId = 0;
         QMessageBox::StandardButton result = QMessageBox::information(this, "You have been killed", "You have been killed. Better luck next time !\nDo you want to try again?", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
         if (result == QMessageBox::Yes) {
             m_game = Game();
@@ -423,27 +475,31 @@ void MainWindow::simulationTimerEvent() {
             this->statusBar()->showMessage("Press space bar to start snake");
         }
     } else {
-        for (int i(1); i <= 6; ++i) {
-            if (score == 5 * i) {
-                this->stopSimulationTimer();
-                m_simulationSpeed = simulationTabSpeed[i];
-                this->startSimulationTimer();  // also replace the timerId with the new one
-            }
-        }
+        // for (int i(1); i <= 3; ++i) {
+        //     if (score == 5 * i) {
+        //         this->stopSimulationTimer();
+        //         m_simulationSpeed = simulationTabSpeed[i];
+        //         this->startSimulationTimer();  // also replace the timerId with the new one
+        //     }
+        // }
+        this->startChangeDirectionTimer();  // we have to call this here, otherwise it will be called
+        this->startRepaintTimer();
     }
 }
-
-void MainWindow::startSimulationTimer() {
-    m_simulationTimer.start();
+void MainWindow::startRepaintTimer() {
+    m_repaintTimer.setTimerType(Qt::PreciseTimer);
+    m_repaintTimer.callOnTimeout([&]() {
+        this->update();
+        // qDebug("%d | %d", himym(), m_repaintTimer.remainingTime());
+    });
+    // qDebug("%d", m_simulationSpeed/steps);
+    m_repaintTimer.setInterval(m_simulationSpeed / steps);
+    m_repaintTimer.start();
+    qDebug("\tstartRepaintTimer");
 }
-
-void MainWindow::stopSimulationTimer() {
-    m_simulationTimer.stop();
-}
-
-void MainWindow::setHeadProperty(int headProperty) {
-    m_headProperty = headProperty;
-    emit headPropertyChanged();
+void MainWindow::stopRepaintTimer() {
+    m_repaintTimer.stop();
+    qDebug("\t\tstopRepaintTimer");
 }
 
 #pragma clang diagnostic pop

@@ -14,9 +14,10 @@
 
 #define NUM_TYPE unsigned int
 
+constexpr unsigned int steps = 2;
 constexpr NUM_TYPE gridSize = 15;
 constexpr unsigned int snakeBaseSize = 4;
-constexpr std::array<int, 7> simulationTabSpeed = {500,
+constexpr std::array<int, 7> simulationTabSpeed = {400,
                                                    180,
                                                    150,
                                                    120,
